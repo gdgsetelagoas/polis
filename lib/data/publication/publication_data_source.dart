@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:res_publica/model/follow_entity.dart';
 import 'package:res_publica/model/publication_entity.dart';
 import 'package:res_publica/model/react_entity.dart';
 import 'package:res_publica/model/reply_entity.dart';
@@ -14,6 +15,8 @@ abstract class PublicationDataSource {
 
   Future<RequestResponse<PublicationEntity>> deletePublication(
       PublicationEntity publication);
+
+  Future<RequestResponse<FollowEntity>> followPublication(FollowEntity follow);
 
   //-------React in Publication-------
   Future<RequestResponse<ReactEntity>> reactInPublication(ReactEntity react);
