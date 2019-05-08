@@ -10,6 +10,7 @@ class PublicationEntity {
   bool checked;
   int numReplies;
   int numReacts;
+  int numFollowers;
   String status;
 
   PublicationEntity(
@@ -24,6 +25,7 @@ class PublicationEntity {
       this.checked,
       this.numReplies,
       this.numReacts,
+      this.numFollowers,
       this.status});
 
   PublicationEntity.fromJson(Map<String, dynamic> json) {
@@ -43,6 +45,7 @@ class PublicationEntity {
     checked = json['checked'];
     numReplies = json['num_replies'];
     numReacts = json['num_reacts'];
+    numFollowers = json['num_followers'];
     status = json['status'];
   }
 
@@ -61,8 +64,9 @@ class PublicationEntity {
     data['checked'] = this.checked;
     data['num_replies'] = this.numReplies;
     data['num_reacts'] = this.numReacts;
+    data['num_followers'] = this.numFollowers;
     data['status'] = this.status;
-    return data;
+    return data..removeWhere((_, value) => value == null);
   }
 }
 
