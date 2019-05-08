@@ -4,11 +4,13 @@ class ReactEntity {
   String userId;
   String createdAt;
   String type;
+  String reactId;
 
   ReactEntity(
       {this.publicationId,
       this.replyId,
       this.userId,
+      this.reactId,
       this.createdAt,
       this.type});
 
@@ -18,6 +20,7 @@ class ReactEntity {
     userId = json['user_id'];
     createdAt = json['created_at'];
     type = json['type'];
+    reactId = json['react_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -27,6 +30,7 @@ class ReactEntity {
     data['user_id'] = this.userId;
     data['created_at'] = this.createdAt;
     data['type'] = this.type;
+    data['react_id'] = this.reactId;
     return data..removeWhere((_, value) => value == null);
   }
 }
