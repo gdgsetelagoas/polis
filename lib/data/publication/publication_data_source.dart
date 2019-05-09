@@ -37,7 +37,7 @@ abstract class PublicationDataSource {
   Future<RequestResponse<ReactEntity>> reactInReply(ReactEntity react);
 
   Future<RequestResponse<ReactEntity>> unReactInReply(
-      String publicationId, String userId);
+      String reactId, String userId);
 
   //-------Feed-------
   Future<RequestResponse<List<PublicationEntity>>> feed({
