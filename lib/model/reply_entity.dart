@@ -7,6 +7,7 @@ class ReplyEntity {
   String createdAt;
   List<ReplyResource> resources;
   String body;
+  String replyId;
 
   ReplyEntity(
       {this.publicationId,
@@ -16,7 +17,8 @@ class ReplyEntity {
       this.numReacts,
       this.createdAt,
       this.resources,
-      this.body});
+      this.body,
+      this.replyId});
 
   ReplyEntity.fromJson(Map<String, dynamic> json) {
     publicationId = json['publication_id'];
@@ -32,6 +34,7 @@ class ReplyEntity {
       });
     }
     body = json['body'];
+    replyId = json['reply_id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -46,6 +49,7 @@ class ReplyEntity {
       data['resources'] = this.resources.map((v) => v.toJson()).toList();
     }
     data['body'] = this.body;
+    data['reply_id'] = this.replyId;
     return data..removeWhere((_, value) => value == null);
   }
 }
