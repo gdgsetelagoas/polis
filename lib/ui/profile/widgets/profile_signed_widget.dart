@@ -18,6 +18,12 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
   final TextEditingController _nameController = TextEditingController();
 
   @override
+  void initState() {
+    _nameController.text = (widget.state as ProfileSigned).user?.name ?? "";
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var bloc = BlocProvider.of<ProfileBloc>(context);
     return ListView(
@@ -32,7 +38,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
                   child: AppCircularImage(
-                    (widget.state as ProfileSigned).user.photo,
+                    (widget.state as ProfileSigned).user?.photo ?? "",
                     borderSide: BorderSide(color: Colors.white, width: 6.0),
                     size: 150.0,
                     shadows: [
