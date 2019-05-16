@@ -4,6 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:res_publica/main.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
 import 'package:res_publica/ui/profile/profile_page.dart';
+import 'package:res_publica/ui/settings/bloc/settings_bloc.dart';
+import 'package:res_publica/ui/settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,22 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _titles = ["Feed", "Meus Posts", "Posts que sigo", "OBS", "Perfil"];
-  final _actions = [
-    <Widget>[],
-    <Widget>[],
-    <Widget>[],
-    <Widget>[],
-    <Widget>[
-      IconButton(
-        onPressed: () {},
-        icon: Icon(
-          Icons.settings,
-          color: Colors.white,
-        ),
-        tooltip: "Configurações",
-      )
-    ]
-  ];
+  List<List<Widget>> _actions;
   int _actualPage = 0;
   var _pageController = PageController();
 
@@ -43,13 +30,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       appBar: AppBar(
         title:
-            Text(_titles[_actualPage], style: TextStyle(color: Colors.white)),
+        Text(_titles[_actualPage], style: TextStyle(color: Colors.white)),
         centerTitle: true,
         actions: _actions[_actualPage],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        unselectedItemColor: Theme.of(context).primaryColor,
-        selectedItemColor: Theme.of(context).primaryColorDark,
+        unselectedItemColor: Theme
+            .of(context)
+            .primaryColor,
+        selectedItemColor: Theme
+            .of(context)
+            .primaryColorDark,
         currentIndex: _actualPage,
         items: [
           BottomNavigationBarItem(
@@ -98,5 +89,33 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    _actions = [
+      <Widget>[],
+      <Widget>[],
+      <Widget>[],
+      <Widget>[],
+      <Widget>[
+        IconButton(
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (c) =>
+                    BlocProvider(
+                      bloc: injector.get<SettingsBloc>("SettingsBloc"),
+                      child: SettingsScreen(),
+                    )));
+          },
+          icon: Icon(
+            Icons.settings,
+            color: Colors.white,
+          ),
+          tooltip: "Configurações",
+        )
+      ]
+    ];
+    super.initState();
   }
 }
