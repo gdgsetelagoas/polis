@@ -21,6 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     bloc = BlocProvider.of<ProfileBloc>(context);
+    bloc.dispatch(ProfileUserAuthenticating());
     bloc.event.listen(_events);
     super.initState();
   }
