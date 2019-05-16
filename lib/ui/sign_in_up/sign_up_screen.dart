@@ -39,7 +39,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         title: Text("Registar"),
       ),
@@ -93,6 +92,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   width: 2.0)),
                           errorBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.redAccent)),
                         ),
                       ),
                       Padding(
@@ -120,6 +121,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     width: 2.0)),
                             errorBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.red)),
+                            focusedErrorBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.redAccent)),
                           ),
                         ),
                       ),
@@ -150,6 +154,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   width: 2.0)),
                           errorBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.redAccent)),
                         ),
                       ),
                       Padding(
@@ -171,6 +177,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     width: 3.5)),
                             errorBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.red)),
+                            focusedErrorBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.redAccent)),
                             suffixIcon: IconButton(
                                 icon: Icon(_isShowPass
                                     ? FontAwesomeIcons.eye

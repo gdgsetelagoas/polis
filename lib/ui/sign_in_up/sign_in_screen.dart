@@ -95,6 +95,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           borderSide: BorderSide(
                               color: Theme.of(context).primaryColor,
                               width: 2.0)),
+                      focusedErrorBorder:  OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.redAccent)),
                     ),
                   ),
                   Padding(
@@ -130,6 +132,8 @@ class _SignInScreenState extends State<SignInScreen> {
                             borderSide: BorderSide(
                                 color: Theme.of(context).primaryColor,
                                 width: 2.0)),
+                        focusedErrorBorder:  OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.redAccent)),
                       ),
                     ),
                   ),
