@@ -82,8 +82,8 @@ class FirebaseAccountDataSource implements AccountDataSource {
   @override
   Future<UserEntity> signInWithGoogle(GoogleSignInAccount currentUser) async {
     var userGoogleAuthentication = await currentUser.authentication;
-    var user = _adapterFirebaseUserToUser(await firebaseAuth.linkWithCredential(
-        GoogleAuthProvider.getCredential(
+    var user = _adapterFirebaseUserToUser(await firebaseAuth
+        .signInWithCredential(GoogleAuthProvider.getCredential(
             idToken: userGoogleAuthentication.idToken,
             accessToken: userGoogleAuthentication.accessToken)));
     return user;
