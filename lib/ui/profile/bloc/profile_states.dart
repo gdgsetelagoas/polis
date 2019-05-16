@@ -29,3 +29,14 @@ class ProfileSigned extends ProfileState {
   @override
   String toString() => "ProfileSigned";
 }
+
+class ProfileErrors extends ProfileState {
+  final List<String> errors;
+
+  ProfileErrors({@required this.errors});
+
+  @override
+  String toString() {
+    return 'ProfileErrors{errors: $errors}';
+  }
+}
