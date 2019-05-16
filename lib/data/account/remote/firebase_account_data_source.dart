@@ -6,6 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meta/meta.dart';
 import 'package:res_publica/data/account/account_data_source.dart';
+import 'package:res_publica/data/util/errors.dart';
+import 'package:res_publica/model/request_response.dart';
 import 'package:res_publica/model/user_entity.dart';
 
 class FirebaseAccountDataSource implements AccountDataSource {
@@ -20,49 +22,77 @@ class FirebaseAccountDataSource implements AccountDataSource {
   });
 
   @override
-  Future<void> signOut() {
-    return firebaseAuth.signOut();
+  Future<RequestResponse> signOut() async {
+    try {
+      await firebaseAuth.signOut();
+      return RequestResponse.success(null);
+    } catch (e) {
+      return errorFirebase(e, 400);
+    }
   }
 
   @override
-  Future<UserEntity> register(String name, String email, String password) {
-    return firebaseAuth
-        .createUserWithEmailAndPassword(email: email, password: password)
-        .asStream()
-        .map((fUser) {
-      fUser.updateProfile(UserUpdateInfo()..displayName = name);
-      return _adapterFirebaseUserToUser(fUser);
-    }).first;
+  Future<RequestResponse<UserEntity>> register(UserEntity user) async {
+    try {
+      var tUser = await firebaseAuth.createUserWithEmailAndPassword(
+          email: user.email, password: user.password);
+      tUser.updateProfile(UserUpdateInfo()..displayName = user.name);
+      return RequestResponse<UserEntity>.success(
+          _adapterFirebaseUserToUser(tUser));
+    } catch (e) {
+      return errorFirebase<UserEntity>(e, 400);
+    }
   }
 
   @override
-  Future<void> resetPassword(String email) {
-    return firebaseAuth.sendPasswordResetEmail(email: email);
+  Future<RequestResponse> resetPassword(String email) async {
+    try {
+      await firebaseAuth.sendPasswordResetEmail(email: email);
+      return RequestResponse.success(null);
+    } catch (e) {
+      return errorFirebase(e, 400);
+    }
   }
 
   @override
-  Future<UserEntity> signIn(String email, String password) async {
-    var fUser = await firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-    return _adapterFirebaseUserToUser(fUser);
+  Future<RequestResponse<UserEntity>> signIn(
+      String email, String password) async {
+    try {
+      var fUser = await firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+      return RequestResponse<UserEntity>.success(
+          _adapterFirebaseUserToUser(fUser));
+    } catch (e) {
+      return errorFirebase<UserEntity>(e, 400);
+    }
   }
 
   @override
-  Future<UserEntity> updateAccount(UserEntity user) async {
-    var fUserTemp = await firebaseAuth.currentUser().then((fuser) {
-      fuser.updateProfile(UserUpdateInfo()
-        ..displayName = user.name
-        ..photoUrl = user.photo);
-    });
-    return _adapterFirebaseUserToUser(fUserTemp);
+  Future<RequestResponse<UserEntity>> updateAccount(UserEntity user) async {
+    try {
+      var fUserTemp = await firebaseAuth.currentUser().then((fuser) {
+        fuser.updateProfile(UserUpdateInfo()
+          ..displayName = user.name
+          ..photoUrl = user.photo);
+      });
+      return RequestResponse<UserEntity>.success(
+          _adapterFirebaseUserToUser(fUserTemp));
+    } catch (e) {
+      return errorFirebase<UserEntity>(e, 400);
+    }
   }
 
   @override
-  Future<UserEntity> updatePassword(
+  Future<RequestResponse<UserEntity>> updatePassword(
       String oldPassword, String newPassword) async {
-    var user = await firebaseAuth.currentUser();
-    await user.updatePassword(newPassword);
-    return _adapterFirebaseUserToUser(user);
+    try {
+      var user = await firebaseAuth.currentUser();
+      await user.updatePassword(newPassword);
+      return RequestResponse<UserEntity>.success(
+          _adapterFirebaseUserToUser(user));
+    } catch (e) {
+      return errorFirebase<UserEntity>(e, 400);
+    }
   }
 
   UserEntity _adapterFirebaseUserToUser(FirebaseUser fUser) {
@@ -80,13 +110,18 @@ class FirebaseAccountDataSource implements AccountDataSource {
   }
 
   @override
-  Future<UserEntity> signInWithGoogle(GoogleSignInAccount currentUser) async {
-    var userGoogleAuthentication = await currentUser.authentication;
-    var user = _adapterFirebaseUserToUser(await firebaseAuth
-        .signInWithCredential(GoogleAuthProvider.getCredential(
-            idToken: userGoogleAuthentication.idToken,
-            accessToken: userGoogleAuthentication.accessToken)));
-    return user;
+  Future<RequestResponse<UserEntity>> signInWithGoogle(
+      GoogleSignInAccount currentUser) async {
+    try {
+      var userGoogleAuthentication = await currentUser.authentication;
+      var user = _adapterFirebaseUserToUser(await firebaseAuth
+          .signInWithCredential(GoogleAuthProvider.getCredential(
+              idToken: userGoogleAuthentication.idToken,
+              accessToken: userGoogleAuthentication.accessToken)));
+      return RequestResponse<UserEntity>.success(user);
+    } catch (e) {
+      return errorFirebase<UserEntity>(e, 400);
+    }
   }
 
   @override
@@ -96,7 +131,7 @@ class FirebaseAccountDataSource implements AccountDataSource {
   }
 
   @override
-  Future<bool> hasEmailAccount(String text) async {
+  Future<RequestResponse<bool>> hasEmailAccount(String text) async {
     return null;
   }
 }
