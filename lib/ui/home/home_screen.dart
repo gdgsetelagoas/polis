@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:res_publica/main.dart';
+import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
+import 'package:res_publica/ui/profile/profile_page.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,6 +12,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _titles = ["Feed", "Meus Posts", "Posts que sigo", "OBS", "Perfil"];
+  final _actions = [
+    <Widget>[],
+    <Widget>[],
+    <Widget>[],
+    <Widget>[],
+    <Widget>[
+      IconButton(
+        onPressed: () {},
+        icon: Icon(
+          Icons.settings,
+          color: Colors.white,
+        ),
+        tooltip: "Configurações",
+      )
+    ]
+  ];
   int _actualPage = 0;
   var _pageController = PageController();
 
@@ -16,10 +36,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        child: Icon(Icons.note_add),
+        child: Icon(
+          Icons.note_add,
+          color: Colors.white,
+        ),
       ),
       appBar: AppBar(
-        title: Text(_titles[_actualPage]),
+        title:
+            Text(_titles[_actualPage], style: TextStyle(color: Colors.white)),
+        centerTitle: true,
+        actions: _actions[_actualPage],
       ),
       bottomNavigationBar: BottomNavigationBar(
         unselectedItemColor: Theme.of(context).primaryColor,
@@ -51,8 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _actualPage = page;
           setState(() {});
           _pageController.animateToPage(_actualPage,
-              duration: Duration(milliseconds: 250),
-              curve: Curves.bounceInOut);
+              duration: Duration(milliseconds: 250), curve: Curves.bounceInOut);
         },
       ),
       body: PageView(
@@ -66,7 +91,10 @@ class _HomeScreenState extends State<HomeScreen> {
           Center(child: Text(_titles[1])),
           Center(child: Text(_titles[2])),
           Center(child: Text(_titles[3])),
-          Center(child: Text(_titles[4])),
+          BlocProvider(
+            bloc: injector.get<ProfileBloc>("ProfileBloc"),
+            child: ProfilePage(),
+          )
         ],
       ),
     );
