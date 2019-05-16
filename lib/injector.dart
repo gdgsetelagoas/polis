@@ -8,6 +8,7 @@ import 'package:res_publica/data/account/remote/firebase_account_data_source.dar
 import 'package:res_publica/data/publication/publication_data_source.dart';
 import 'package:res_publica/data/publication/remote/firebase_publication_data_source.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
+import 'package:res_publica/ui/settings/bloc/settings_bloc.dart';
 import 'package:res_publica/ui/sign_in_up/bloc/sign_bloc.dart';
 
 class Injector {
@@ -69,6 +70,12 @@ class Injector {
     _container.register<ProfileBloc>(
         (c) => ProfileBloc(get<AccountDataSource>("AccountDataSource")),
         name: "ProfileBloc",
+        defaultMode: dioc.InjectMode.create);
+
+    _container.register<SettingsBloc>(
+        (c) => SettingsBloc(
+            accountDataSource: get<AccountDataSource>("AccountDataSource")),
+        name: "SettingsBloc",
         defaultMode: dioc.InjectMode.create);
 
     _container.register<SignBloc>(
