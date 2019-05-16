@@ -2,10 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dioc/dioc.dart' as dioc;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:res_publica/data/account/account_data_source.dart';
 import 'package:res_publica/data/account/remote/firebase_account_data_source.dart';
 import 'package:res_publica/data/publication/publication_data_source.dart';
 import 'package:res_publica/data/publication/remote/firebase_publication_data_source.dart';
+import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
+import 'package:res_publica/ui/sign_in_up/bloc/sign_bloc.dart';
 
 class Injector {
   dioc.Container _container;
@@ -34,6 +37,15 @@ class Injector {
         name: "Firestore");
     _container.register<FirebaseStorage>((c) => FirebaseStorage.instance,
         name: "FirebaseStorage");
+    _container.register((c) {
+      return GoogleSignIn(
+        scopes: [
+          'email',
+          'https://www.googleapis.com/auth/contacts.readonly',
+          'profile'
+        ],
+      );
+    }, name: "GoogleSignIn");
   }
 
   Future _registerAppDataSources() async {
@@ -53,5 +65,17 @@ class Injector {
         name: "PublicationDataSource");
   }
 
-  Future _registerUiBlocs() async {}
+  Future _registerUiBlocs() async {
+    _container.register<ProfileBloc>(
+        (c) => ProfileBloc(get<AccountDataSource>("AccountDataSource")),
+        name: "ProfileBloc",
+        defaultMode: dioc.InjectMode.create);
+
+    _container.register<SignBloc>(
+        (c) => SignBloc(
+            accountDataSource: get<AccountDataSource>("AccountDataSource"),
+            googleSignIn: get<GoogleSignIn>("GoogleSignIn")),
+        name: "SignBloc",
+        defaultMode: dioc.InjectMode.create);
+  }
 }
