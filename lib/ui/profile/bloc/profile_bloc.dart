@@ -5,13 +5,13 @@ import 'package:res_publica/ui/profile/bloc/profile_states.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final AccountDataSource _accountDataSource;
+  ProfileState _state = ProfileNotSigned();
 
   ProfileBloc(this._accountDataSource);
 
   @override
   ProfileState get initialState {
-    dispatch(ProfileUserAuthenticating());
-    return ProfileNotSigned();
+    return _state;
   }
 
   @override
@@ -21,18 +21,33 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     if (event is ProfileUserAuthenticating) {
       var user = await _accountDataSource.currentUser;
       if (user == null)
-        yield ProfileNotSigned();
+        _state = ProfileNotSigned();
       else
-        yield ProfileSigned(user: user);
+        _state = ProfileSigned(user: user);
+      yield _state;
     }
 
     if (event is ProfileUserAuthenticated) {
-      await Future.delayed(Duration(milliseconds: 750));
-      yield ProfileSigned();
+      _state = ProfileSigned(user: event.user);
+      yield _state;
     }
 
     if (event is ProfileUpdatingName && event.editing)
       yield ProfileEditingName();
-    if (event is ProfileUpdateName) yield ProfileSigned();
+    if (event is ProfileUpdateName) {
+      var user = await _accountDataSource.currentUser;
+      if (user == null)
+        yield ProfileNotSigned();
+      else {
+        var response =
+            await _accountDataSource.updateAccount(user..name = event.name);
+        if (response.isSuccess)
+          yield ProfileSigned(user: response.data);
+        else {
+          yield ProfileSigned(user: user);
+          yield ProfileErrors(errors: response.errors);
+        }
+      }
+    }
   }
 }
