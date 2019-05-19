@@ -27,7 +27,7 @@ class AppCircularImage extends StatelessWidget {
       height: size,
       decoration: ShapeDecoration(
           shadows: shadows,
-          shape: CircleBorder(side: borderSide),
+          shape: CircleBorder(side: borderSide ?? BorderSide.none),
           image: DecorationImage(
               image: urlRegex.hasMatch(path)
                   ? NetworkImage(path)
