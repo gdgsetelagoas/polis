@@ -90,7 +90,6 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      textAlign: TextAlign.right,
       controller: widget.controller,
       focusNode: widget.focusNode,
       obscureText: widget.obscureText,
