@@ -52,6 +52,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 builder: (con) => AppErrorsDialog(
                       errors: state.errors,
                     ));
+          } else if (state is SignLoginSuccessful) {
+            Navigator.of(context).pop(state.user);
           }
         },
         child: BlocBuilder<SignEvent, SignState>(
@@ -95,7 +97,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           borderSide: BorderSide(
                               color: Theme.of(context).primaryColor,
                               width: 2.0)),
-                      focusedErrorBorder:  OutlineInputBorder(
+                      focusedErrorBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.redAccent)),
                     ),
                   ),
@@ -132,7 +134,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             borderSide: BorderSide(
                                 color: Theme.of(context).primaryColor,
                                 width: 2.0)),
-                        focusedErrorBorder:  OutlineInputBorder(
+                        focusedErrorBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.redAccent)),
                       ),
                     ),
