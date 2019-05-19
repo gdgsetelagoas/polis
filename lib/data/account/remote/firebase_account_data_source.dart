@@ -134,4 +134,9 @@ class FirebaseAccountDataSource implements AccountDataSource {
   Future<RequestResponse<bool>> hasEmailAccount(String text) async {
     return null;
   }
+
+  @override
+  Stream<UserEntity> onAuthStateChange() {
+    return firebaseAuth.onAuthStateChanged.map(_adapterFirebaseUserToUser);
+  }
 }

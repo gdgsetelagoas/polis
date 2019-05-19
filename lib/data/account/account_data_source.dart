@@ -22,4 +22,6 @@ abstract class AccountDataSource {
   Future<UserEntity> get currentUser;
 
   Future<RequestResponse<bool>> hasEmailAccount(String text);
+
+  Stream<UserEntity> onAuthStateChange();
 }
