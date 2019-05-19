@@ -8,6 +8,7 @@ import 'package:res_publica/data/account/remote/firebase_account_data_source.dar
 import 'package:res_publica/data/publication/publication_data_source.dart';
 import 'package:res_publica/data/publication/remote/firebase_publication_data_source.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
+import 'package:res_publica/ui/publication/bloc/publication_bloc.dart';
 import 'package:res_publica/ui/settings/bloc/settings_bloc.dart';
 import 'package:res_publica/ui/sign_in_up/bloc/sign_bloc.dart';
 
@@ -55,7 +56,8 @@ class Injector {
             firebaseAuth: c.get<FirebaseAuth>(creator: "FirebaseAuth"),
             firebaseStorage: c.get<FirebaseStorage>(creator: "FirebaseStorage"),
             firestore: c.get<Firestore>(creator: "Firestore")),
-        name: "AccountDataSource");
+        name: "AccountDataSource",
+        defaultMode: dioc.InjectMode.singleton);
 
     _container.register<PublicationDataSource>(
         (c) => FirebasePublicationDataSource(
@@ -83,6 +85,14 @@ class Injector {
             accountDataSource: get<AccountDataSource>("AccountDataSource"),
             googleSignIn: get<GoogleSignIn>("GoogleSignIn")),
         name: "SignBloc",
+        defaultMode: dioc.InjectMode.create);
+
+    _container.register<PublicationBloc>(
+        (c) => PublicationBloc(
+            accountDataSource: get<AccountDataSource>("AccountDataSource"),
+            publicationDataSource:
+                get<PublicationDataSource>("PublicationDataSource")),
+        name: "PublicationBloc",
         defaultMode: dioc.InjectMode.create);
   }
 }
