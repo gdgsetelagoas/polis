@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:res_publica/main.dart';
+import 'package:res_publica/ui/publication/bloc/publication_bloc.dart';
+import 'package:res_publica/ui/publication/create_publication_screen.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
 import 'package:res_publica/ui/profile/profile_page.dart';
 import 'package:res_publica/ui/settings/bloc/settings_bloc.dart';
@@ -22,7 +24,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (c) => BlocProvider(
+                    bloc: injector.get<PublicationBloc>("PublicationBloc"),
+                    child: CreatePublicationScreen(),
+                  )));
+        },
         child: Icon(
           Icons.note_add,
           color: Colors.white,
@@ -30,17 +38,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       appBar: AppBar(
         title:
-        Text(_titles[_actualPage], style: TextStyle(color: Colors.white)),
+            Text(_titles[_actualPage], style: TextStyle(color: Colors.white)),
         centerTitle: true,
         actions: _actions[_actualPage],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        unselectedItemColor: Theme
-            .of(context)
-            .primaryColor,
-        selectedItemColor: Theme
-            .of(context)
-            .primaryColorDark,
+        unselectedItemColor: Theme.of(context).primaryColor,
+        selectedItemColor: Theme.of(context).primaryColorDark,
         currentIndex: _actualPage,
         items: [
           BottomNavigationBarItem(
@@ -102,8 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (c) =>
-                    BlocProvider(
+                builder: (c) => BlocProvider(
                       bloc: injector.get<SettingsBloc>("SettingsBloc"),
                       child: SettingsScreen(),
                     )));
