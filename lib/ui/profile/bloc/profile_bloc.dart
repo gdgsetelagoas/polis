@@ -7,7 +7,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final AccountDataSource _accountDataSource;
   ProfileState _state = ProfileNotSigned();
 
-  ProfileBloc(this._accountDataSource);
+  ProfileBloc(this._accountDataSource) {
+    _accountDataSource.onAuthStateChange().listen((user) {
+      dispatch(user == null
+          ? ProfileUserAuthenticatedFail()
+          : ProfileUserAuthenticated(user: user));
+    });
+  }
 
   @override
   ProfileState get initialState {
@@ -32,8 +38,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       yield _state;
     }
 
+    if (event is ProfileUserAuthenticatedFail) {
+      _state = ProfileNotSigned();
+      yield _state;
+    }
+
     if (event is ProfileUpdatingName && event.editing)
       yield ProfileEditingName();
+
     if (event is ProfileUpdateName) {
       var user = await _accountDataSource.currentUser;
       if (user == null)

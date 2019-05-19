@@ -89,7 +89,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                                 .dispatch(ProfileUpdatingName(editing: true)))
                   ],
                 ),
-                Text((widget.state as ProfileSigned).user.email,
+                Text((widget.state as ProfileSigned).user?.email ?? "",
                     style: TextStyle(color: Colors.white, fontSize: 14.0)),
               ],
             ),
