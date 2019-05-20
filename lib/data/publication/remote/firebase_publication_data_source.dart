@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:image/image.dart';
 import 'package:meta/meta.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:res_publica/data/account/account_data_source.dart';
 import 'package:res_publica/data/publication/publication_data_source.dart';
 import 'package:res_publica/data/util/errors.dart';
@@ -28,6 +33,8 @@ class FirebasePublicationDataSource extends PublicationDataSource {
   final CollectionReference _replyCollection;
   final CollectionReference _followCollection;
 
+  final FlutterFFmpeg _flutterFFmpeg = new FlutterFFmpeg();
+
   Query _nextFeedQuery;
   Query _olderFeedQuery;
 
@@ -49,8 +56,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
       PublicationEntity publication) async {
     try {
       await _publicationCollection.document(publication.publicationId).delete();
-      return RequestResponse.success(
-          publication..updatedAt = DateTime.now());
+      return RequestResponse.success(publication..updatedAt = DateTime.now());
     } catch (e) {
       return errorFirebase<PublicationEntity>(e, 23);
     }
@@ -147,12 +153,13 @@ class FirebasePublicationDataSource extends PublicationDataSource {
       return RequestResponse.fail(
           403.toString(), ["Você precisa de está logado para publicar."]);
     try {
+      var uploadedFiles = await _uploadFile(publication.resources);
       var doc = await _publicationCollection.add((publication
             ..userId = user.userId
             ..createdAt = DateTime.now()
-            ..updatedAt = DateTime.now())
+            ..updatedAt = DateTime.now()
+            ..resources = uploadedFiles)
           .toJson());
-      // TODO: Upload files
       publication.publicationId = doc.documentID;
       await doc
           .setData({"publication_id": publication.publicationId}, merge: true);
@@ -160,6 +167,50 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     } catch (e) {
       return errorFirebase<PublicationEntity>(e, 23);
     }
+  }
+
+  Future<List<PublicationResource>> _uploadFile(
+      List<PublicationResource> list) async {
+    var response = <PublicationResource>[];
+    for (var i = 0; i < list.length; i++) {
+      var res = list[i];
+      if (res.type == PublicationResourceType.IMAGE) {
+        Image image = decodeImage(File(res.resource).readAsBytesSync());
+        var imageForUpload = copyResize(image, 1024);
+        var task = await _publicationStore
+            .child('image/img_${DateTime.now().millisecondsSinceEpoch}.jpg')
+            .putData(encodeJpg(imageForUpload, quality: 75))
+            .onComplete;
+        response.add(PublicationResource(
+            resource: await task.ref.getDownloadURL(), type: res.type));
+      } else {
+        var file = File(res.resource);
+        Directory tempDir = await getTemporaryDirectory();
+        var newFile = File('${tempDir.path}/temp($i).webm');
+        var commands = [
+          '-i',
+          res.resource,
+          '-c:v',
+          'libvpx',
+          '-b:v',
+          '1M',
+          '-c:a',
+          'libvorbis',
+          '${tempDir.path}/temp($i).webm'
+        ];
+        var videoData = await _flutterFFmpeg.executeWithArguments(commands);
+        print(
+            "video convertido\n$videoData\nTamanho Novo Arquivo:${await newFile.length()}\nTamanho Velho Arquivo:${await file.length()}");
+        var task = await _publicationStore
+            .child(
+                'videos/video_${DateTime.now().millisecondsSinceEpoch}.${file.path.split(".").last ?? "mp4"}')
+            .putFile(newFile)
+            .onComplete;
+        response.add(PublicationResource(
+            resource: await task.ref.getDownloadURL(), type: res.type));
+      }
+    }
+    return response;
   }
 
   @override
