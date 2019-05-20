@@ -50,7 +50,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     try {
       await _publicationCollection.document(publication.publicationId).delete();
       return RequestResponse.success(
-          publication..updatedAt = DateTime.now().toIso8601String());
+          publication..updatedAt = DateTime.now());
     } catch (e) {
       return errorFirebase<PublicationEntity>(e, 23);
     }
@@ -149,8 +149,8 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     try {
       var doc = await _publicationCollection.add((publication
             ..userId = user.userId
-            ..createdAt = DateTime.now().toIso8601String()
-            ..updatedAt = DateTime.now().toIso8601String())
+            ..createdAt = DateTime.now()
+            ..updatedAt = DateTime.now())
           .toJson());
       // TODO: Upload files
       publication.publicationId = doc.documentID;
@@ -299,7 +299,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
           403.toString(), ["Você precisa de está logado para publicar."]);
     try {
       await _publicationCollection.document().setData(
-          (publication..updatedAt = DateTime.now().toIso8601String()).toJson(),
+          (publication..updatedAt = DateTime.now()).toJson(),
           merge: true);
       return RequestResponse.success(publication);
     } catch (e) {
