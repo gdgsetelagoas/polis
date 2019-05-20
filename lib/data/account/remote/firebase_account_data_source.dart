@@ -14,12 +14,15 @@ class FirebaseAccountDataSource implements AccountDataSource {
   final FirebaseAuth firebaseAuth;
   final Firestore firestore;
   final FirebaseStorage firebaseStorage;
+  UserEntity _user;
 
   FirebaseAccountDataSource({
     @required this.firebaseAuth,
     @required this.firestore,
     @required this.firebaseStorage,
-  });
+  }) {
+    currentUser;
+  }
 
   @override
   Future<RequestResponse> signOut() async {
@@ -37,8 +40,8 @@ class FirebaseAccountDataSource implements AccountDataSource {
       var tUser = await firebaseAuth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
       tUser.updateProfile(UserUpdateInfo()..displayName = user.name);
-      return RequestResponse<UserEntity>.success(
-          _adapterFirebaseUserToUser(tUser));
+      _user = _adapterFirebaseUserToUser(tUser);
+      return RequestResponse<UserEntity>.success(_user);
     } catch (e) {
       return errorFirebase<UserEntity>(e, 400);
     }
@@ -60,8 +63,8 @@ class FirebaseAccountDataSource implements AccountDataSource {
     try {
       var fUser = await firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      return RequestResponse<UserEntity>.success(
-          _adapterFirebaseUserToUser(fUser));
+      _user = _adapterFirebaseUserToUser(fUser);
+      return RequestResponse<UserEntity>.success(_user);
     } catch (e) {
       return errorFirebase<UserEntity>(e, 400);
     }
@@ -127,8 +130,12 @@ class FirebaseAccountDataSource implements AccountDataSource {
   @override
   Future<UserEntity> get currentUser async {
     var u = await firebaseAuth.currentUser();
-    return _adapterFirebaseUserToUser(u);
+    _user = _adapterFirebaseUserToUser(u);
+    return _user;
   }
+
+  @override
+  UserEntity get user => _user;
 
   @override
   Future<RequestResponse<bool>> hasEmailAccount(String text) async {
