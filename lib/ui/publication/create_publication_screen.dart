@@ -14,7 +14,8 @@ import 'bloc/bloc.dart';
 
 class CreatePublicationScreen extends StatefulWidget {
   @override
-  _CreatePublicationScreenState createState() => _CreatePublicationScreenState();
+  _CreatePublicationScreenState createState() =>
+      _CreatePublicationScreenState();
 }
 
 class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
@@ -34,6 +35,15 @@ class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
       child: BlocBuilder<PublicationEvent, PublicationState>(
         bloc: _bloc,
         builder: (BuildContext context, PublicationState state) {
+          if (state is PublicationProcessing)
+            return Scaffold(
+              appBar: AppBar(
+                title: Text("Carregando.."),
+              ),
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           return Scaffold(
             appBar: AppBar(
               title: Text(
