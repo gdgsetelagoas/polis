@@ -21,7 +21,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "2.2.0"
   bloc:
     dependency: transitive
     description:
@@ -146,6 +146,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.0"
+  flutter_ffmpeg:
+    dependency: "direct main"
+    description:
+      path: "packages/flutter_ffmpeg_https_lts"
+      ref: "v0.2.1"
+      resolved-ref: "4a435b46aa9d3ce93a8083651323402121ec08cd"
+      url: "git://github.com/tanersener/flutter-ffmpeg.git"
+    source: git
+    version: "0.2.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -221,6 +230,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.2"
+  path_provider:
+    dependency: "direct main"
+    description:
+      name: path_provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   pedantic:
     dependency: transitive
     description:
@@ -241,7 +257,7 @@ packages:
       name: quiver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   rxdart:
     dependency: "direct main"
     description:
@@ -302,7 +318,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.4"
+    version: "0.2.5"
   typed_data:
     dependency: transitive
     description:
