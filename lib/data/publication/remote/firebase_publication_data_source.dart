@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 import 'package:image/image.dart';
 import 'package:meta/meta.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:res_publica/data/account/account_data_source.dart';
 import 'package:res_publica/data/publication/publication_data_source.dart';
 import 'package:res_publica/data/util/errors.dart';
@@ -32,8 +30,6 @@ class FirebasePublicationDataSource extends PublicationDataSource {
   final CollectionReference _publicationCollection;
   final CollectionReference _replyCollection;
   final CollectionReference _followCollection;
-
-  final FlutterFFmpeg _flutterFFmpeg = new FlutterFFmpeg();
 
   Query _nextFeedQuery;
   Query _olderFeedQuery;
@@ -185,26 +181,10 @@ class FirebasePublicationDataSource extends PublicationDataSource {
             resource: await task.ref.getDownloadURL(), type: res.type));
       } else {
         var file = File(res.resource);
-        Directory tempDir = await getTemporaryDirectory();
-        var newFile = File('${tempDir.path}/temp($i).webm');
-        var commands = [
-          '-i',
-          res.resource,
-          '-c:v',
-          'libvpx',
-          '-b:v',
-          '1M',
-          '-c:a',
-          'libvorbis',
-          '${tempDir.path}/temp($i).webm'
-        ];
-        var videoData = await _flutterFFmpeg.executeWithArguments(commands);
-        print(
-            "video convertido\n$videoData\nTamanho Novo Arquivo:${await newFile.length()}\nTamanho Velho Arquivo:${await file.length()}");
         var task = await _publicationStore
             .child(
                 'videos/video_${DateTime.now().millisecondsSinceEpoch}.${file.path.split(".").last ?? "mp4"}')
-            .putFile(newFile)
+            .putFile(file)
             .onComplete;
         response.add(PublicationResource(
             resource: await task.ref.getDownloadURL(), type: res.type));

@@ -146,15 +146,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.0"
-  flutter_ffmpeg:
-    dependency: "direct main"
-    description:
-      path: "packages/flutter_ffmpeg_https_lts"
-      ref: "v0.2.1"
-      resolved-ref: "4a435b46aa9d3ce93a8083651323402121ec08cd"
-      url: "git://github.com/tanersener/flutter-ffmpeg.git"
-    source: git
-    version: "0.2.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
