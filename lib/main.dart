@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:res_publica/injector.dart';
 import 'package:res_publica/ui/home/home_screen.dart';
 import 'package:res_publica/ui/widgets/app_colors.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 Injector injector;
 
 void main() async {
+  timeago.setLocaleMessages('pt_BR', timeago.PtBrMessages());
   injector = Injector();
   await injector.resPulica();
   runApp(MyApp());
