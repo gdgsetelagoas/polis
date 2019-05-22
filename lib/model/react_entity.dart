@@ -3,7 +3,7 @@ class ReactEntity {
   String replyId;
   String userId;
   String createdAt;
-  String type;
+  ReactType type;
   String reactId;
 
   ReactEntity(
@@ -12,14 +12,16 @@ class ReactEntity {
       this.userId,
       this.reactId,
       this.createdAt,
-      this.type});
+      this.type = ReactType.LIKE});
 
   ReactEntity.fromJson(Map<String, dynamic> json) {
     publicationId = json['publication_id'];
     replyId = json['reply_id'];
     userId = json['user_id'];
     createdAt = json['created_at'];
-    type = json['type'];
+    type = ReactType.values.firstWhere(
+        (react) => react.toString() == json['type'],
+        orElse: () => ReactType.LIKE);
     reactId = json['react_id'];
   }
 
@@ -29,8 +31,10 @@ class ReactEntity {
     data['reply_id'] = this.replyId;
     data['user_id'] = this.userId;
     data['created_at'] = this.createdAt;
-    data['type'] = this.type;
+    data['type'] = this.type.toString();
     data['react_id'] = this.reactId;
     return data..removeWhere((_, value) => value == null);
   }
 }
+
+enum ReactType { LIKE, INDIGNANT, ASTONISHED, SUPPORT, ANGRY }
