@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:res_publica/main.dart';
-import 'package:res_publica/ui/publication/bloc/publication_bloc.dart';
-import 'package:res_publica/ui/publication/create_publication_screen.dart';
+import 'package:res_publica/ui/feed/bloc/bloc.dart';
+import 'package:res_publica/ui/feed/feed_page.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
 import 'package:res_publica/ui/profile/profile_page.dart';
+import 'package:res_publica/ui/publication/bloc/publication_bloc.dart';
+import 'package:res_publica/ui/publication/create_publication_screen.dart';
 import 'package:res_publica/ui/settings/bloc/settings_bloc.dart';
 import 'package:res_publica/ui/settings/settings_screen.dart';
 
@@ -82,9 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() {});
         },
         children: <Widget>[
-          Center(child: Text(_titles[0])),
-          Center(child: Text(_titles[1])),
-          Center(child: Text(_titles[2])),
+          FeedPage(feedContext: FeedContext.GENERAL),
+          FeedPage(feedContext: FeedContext.MINE),
+          FeedPage(feedContext: FeedContext.FOLLOWED),
           Center(child: Text(_titles[3])),
           BlocProvider(
             bloc: injector.get<ProfileBloc>("ProfileBloc"),
