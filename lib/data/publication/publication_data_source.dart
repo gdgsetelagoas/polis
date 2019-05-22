@@ -42,7 +42,7 @@ abstract class PublicationDataSource {
   //-------Feed-------
   Future<RequestResponse<List<PublicationEntity>>> feed({
     @required int page,
-    @required int itemPerPage,
+    @required int itemsPerPage,
   });
 
   //-------Publication that I followed-------

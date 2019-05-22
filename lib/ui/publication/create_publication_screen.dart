@@ -44,6 +44,7 @@ class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
                 child: CircularProgressIndicator(),
               ),
             );
+          if (state is PublicationErrors) return Container();
           return Scaffold(
             appBar: AppBar(
               title: Text(
@@ -159,7 +160,7 @@ class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
                                     if (file == null) return;
                                     _resources.add(PublicationResource(
                                         type: PublicationResourceType.IMAGE,
-                                        resource: file.path));
+                                        source: file.path));
                                     setState(() {});
                                   }),
                               IconButton(
@@ -173,7 +174,7 @@ class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
                                         source: source);
                                     if (file == null) return;
                                     _resources.add(PublicationResource(
-                                        resource: file.path,
+                                        source: file.path,
                                         type: PublicationResourceType.VIDEO));
                                     setState(() {});
                                   })

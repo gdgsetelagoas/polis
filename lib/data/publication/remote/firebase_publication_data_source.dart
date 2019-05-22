@@ -60,14 +60,14 @@ class FirebasePublicationDataSource extends PublicationDataSource {
 
   @override
   Future<RequestResponse<List<PublicationEntity>>> feed(
-      {int page, int itemPerPage}) async {
+      {int page, int itemsPerPage}) async {
     if (page < 0)
       return RequestResponse.fail(404.toString(), ["Pagina inválida"]);
     try {
       if (page == 0) {
-        return RequestResponse.success(await _firstFeedQuery(itemPerPage));
+        return RequestResponse.success(await _firstFeedQuery(itemsPerPage));
       } else {
-        return RequestResponse.success(await _nextFeedQueries(itemPerPage));
+        return RequestResponse.success(await _nextFeedQueries(itemsPerPage));
       }
     } catch (e) {
       return errorFirebase<List<PublicationEntity>>(e, 401);
@@ -171,23 +171,23 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     for (var i = 0; i < list.length; i++) {
       var res = list[i];
       if (res.type == PublicationResourceType.IMAGE) {
-        Image image = decodeImage(File(res.resource).readAsBytesSync());
+        Image image = decodeImage(File(res.source).readAsBytesSync());
         var imageForUpload = copyResize(image, 1024);
         var task = await _publicationStore
             .child('image/img_${DateTime.now().millisecondsSinceEpoch}.jpg')
             .putData(encodeJpg(imageForUpload, quality: 75))
             .onComplete;
         response.add(PublicationResource(
-            resource: await task.ref.getDownloadURL(), type: res.type));
+            source: await task.ref.getDownloadURL(), type: res.type));
       } else {
-        var file = File(res.resource);
+        var file = File(res.source);
         var task = await _publicationStore
             .child(
                 'videos/video_${DateTime.now().millisecondsSinceEpoch}.${file.path.split(".").last ?? "mp4"}')
             .putFile(file)
             .onComplete;
         response.add(PublicationResource(
-            resource: await task.ref.getDownloadURL(), type: res.type));
+            source: await task.ref.getDownloadURL(), type: res.type));
       }
     }
     return response;

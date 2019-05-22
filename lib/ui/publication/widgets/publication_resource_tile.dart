@@ -24,9 +24,9 @@ class _PublicationResourceTileState extends State<PublicationResourceTile> {
 
   @override
   void initState() {
-    _videoController = (isHttp.hasMatch(widget.resource.resource)
-        ? VideoPlayerController.network(widget.resource.resource)
-        : VideoPlayerController.file(File(widget.resource.resource)))
+    _videoController = (isHttp.hasMatch(widget.resource.source)
+        ? VideoPlayerController.network(widget.resource.source)
+        : VideoPlayerController.file(File(widget.resource.source)))
       ..initialize().then((_) {
         _videoController.setLooping(true);
       });
@@ -47,7 +47,7 @@ class _PublicationResourceTileState extends State<PublicationResourceTile> {
         children: <Widget>[
           widget.resource.type == PublicationResourceType.IMAGE
               ? Image.file(
-                  File(widget.resource.resource),
+                  File(widget.resource.source),
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                   fit: BoxFit.cover,

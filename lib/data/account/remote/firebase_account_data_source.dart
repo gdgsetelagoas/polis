@@ -146,4 +146,9 @@ class FirebaseAccountDataSource implements AccountDataSource {
   Stream<UserEntity> onAuthStateChange() {
     return firebaseAuth.onAuthStateChanged.map(_adapterFirebaseUserToUser);
   }
+
+  @override
+  Future<UserEntity> getUserById(String userId) {
+
+  }
 }
