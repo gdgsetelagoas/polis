@@ -71,20 +71,20 @@ class PublicationEntity {
 }
 
 class PublicationResource {
-  String resource;
+  String source;
   PublicationResourceType type;
 
-  PublicationResource({this.resource, this.type});
+  PublicationResource({this.source, this.type});
 
-  PublicationResource.fromJson(Map<String, dynamic> json) {
-    resource = json['resource'];
+  PublicationResource.fromJson(Map<dynamic, dynamic> json) {
+    source = json['resource'];
     type = PublicationResourceType.values
         .firstWhere((e) => e.toString() == json['type'], orElse: () => null);
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['resource'] = this.resource;
+    data['resource'] = this.source;
     data['type'] = this.type.toString();
     return data..removeWhere((_, value) => value == null);
   }
