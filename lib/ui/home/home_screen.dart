@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:res_publica/main.dart';
 import 'package:res_publica/ui/feed/bloc/bloc.dart';
 import 'package:res_publica/ui/feed/feed_page.dart';
+import 'package:res_publica/ui/obs/obs_page.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
 import 'package:res_publica/ui/profile/profile_page.dart';
 import 'package:res_publica/ui/publication/bloc/publication_bloc.dart';
@@ -87,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
           FeedPage(feedContext: FeedContext.GENERAL),
           FeedPage(feedContext: FeedContext.MINE),
           FeedPage(feedContext: FeedContext.FOLLOWED),
-          Center(child: Text(_titles[3])),
+          OBSPage(),
           BlocProvider(
             bloc: injector.get<ProfileBloc>("ProfileBloc"),
             child: ProfilePage(),
