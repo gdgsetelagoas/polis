@@ -31,7 +31,7 @@ class _FeedItemTileState extends State<FeedItemTile> {
               name: "Desconhecido",
               photo:
                   "https://www.publicdomainpictures.net/pictures/280000/nahled/question-mark-1544553868vD2.jpg");
-      setState(() {});
+      if (mounted) setState(() {});
     });
     super.initState();
   }
@@ -114,13 +114,13 @@ class _FeedItemTileState extends State<FeedItemTile> {
                   var res = widget.publication.resources[index];
                   if (res.type == PublicationResourceType.IMAGE)
                     return GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (c) => ViewPublicationScreen(
-                              publication: widget.publication,
-                              bloc: widget.bloc,
-                              sourceIndex: index,
-                            )));
+                                  publication: widget.publication,
+                                  bloc: widget.bloc,
+                                  sourceIndex: index,
+                                )));
                       },
                       child: Container(
                         color: Colors.grey.shade300,

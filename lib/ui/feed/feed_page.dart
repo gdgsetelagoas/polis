@@ -29,26 +29,47 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
-      body: BlocBuilder(
-        bloc: _bloc,
-        builder: (c, s) {
-          if (s is FeedList)
-            return RefreshIndicator(
-              onRefresh: () async {
-                _bloc.dispatch(FeedRefresh(widget.feedContext));
-              },
-              child: ListView.builder(
-                  itemCount: s.publications.length,
-                  controller: _scrollController,
-                  itemBuilder: (context, index) => FeedItemTile(
-                        publication: s.publications[index],
-                        bloc: _bloc,
-                      )),
-            );
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+      body: Stack(
+        children: <Widget>[
+          BlocBuilder(
+            bloc: _bloc,
+            builder: (c, s) {
+              if (s is FeedList)
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    _bloc.dispatch(FeedRefresh(widget.feedContext));
+                  },
+                  child: ListView.builder(
+                      itemCount: s.publications.length,
+                      controller: _scrollController,
+                      itemBuilder: (context, index) => FeedItemTile(
+                            publication: s.publications[index],
+                            bloc: _bloc,
+                          )),
+                );
+              return Center();
+            },
+          ),
+          Positioned(
+            top: 0.0,
+            right: 0.0,
+            child: StreamBuilder<bool>(
+                stream: _bloc.outProcessing,
+                initialData: false,
+                builder: (context, snapshot) {
+                  print(snapshot.data);
+                  if (snapshot.data)
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator()),
+                    );
+                  return Container();
+                }),
+          )
+        ],
       ),
     );
   }

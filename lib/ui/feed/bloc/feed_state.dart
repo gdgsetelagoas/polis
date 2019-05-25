@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:res_publica/model/publication_entity.dart';
+import 'package:res_publica/ui/feed/bloc/feed_event.dart';
 
 @immutable
 abstract class FeedState extends Equatable {
@@ -21,8 +22,12 @@ class FeedList extends FeedState {
 }
 
 class FeedEmptyList extends FeedState {
+  final FeedContext feedContext;
+
+  FeedEmptyList({@required this.feedContext});
+
   @override
   String toString() {
-    return 'FeedEmptyList{}';
+    return 'FeedEmptyList{feedContext: $feedContext}';
   }
 }

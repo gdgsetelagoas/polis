@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:res_publica/data/account/account_data_source.dart';
 import 'package:res_publica/data/publication/publication_data_source.dart';
 import 'package:res_publica/model/user_entity.dart';
+import 'package:rxdart/rxdart.dart';
 
 import './bloc.dart';
 
@@ -13,6 +14,8 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   final PublicationDataSource publicationDataSource;
   int _page = 0;
   final int _itemsPerPage = 25;
+  final BehaviorSubject<bool> _processingPublisher = BehaviorSubject();
+  FeedEvent _lastEvent;
 
   FeedBloc(
       {@required this.publicationDataSource, @required this.accountDataSource});
@@ -21,9 +24,17 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   FeedState get initialState => InitialFeedState();
 
   @override
+  void dispose() {
+    _processingPublisher.close();
+    super.dispose();
+  }
+
+  @override
   Stream<FeedState> mapEventToState(
     FeedEvent event,
   ) async* {
+    if (event is FeedLoadMore && event == this._lastEvent) return;
+     _processingPublisher.sink.add(true);
     if (event is FeedLoadFeed) {
       var user = await accountDataSource.currentUser;
       var response;
@@ -37,15 +48,20 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         response = await publicationDataSource.feed(
             page: _page, itemsPerPage: _itemsPerPage);
       if (response.isSuccess) {
+        if (response.data.length >= _itemsPerPage) _page++;
         if (response.data.isEmpty)
-          yield FeedEmptyList();
+          yield FeedEmptyList(feedContext: event.feedContext);
         else
           yield FeedList(response.data);
       }
     }
+    this._lastEvent = event;
+    _processingPublisher.sink.add(false);
   }
 
   Future<UserEntity> getUserData(String userId) async {
     return accountDataSource.getUserById(userId);
   }
+
+  Stream<bool> get outProcessing => _processingPublisher.stream;
 }
