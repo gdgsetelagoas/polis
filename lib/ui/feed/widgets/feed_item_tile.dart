@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:res_publica/model/follow_entity.dart';
 import 'package:res_publica/model/publication_entity.dart';
 import 'package:res_publica/model/react_entity.dart';
 import 'package:res_publica/model/user_entity.dart';
 import 'package:res_publica/ui/feed/bloc/bloc.dart';
 import 'package:res_publica/ui/feed/widgets/feed_item_player.dart';
+import 'package:res_publica/ui/feed/widgets/feed_react_select.dart';
 import 'package:res_publica/ui/publication/view_post_screen.dart';
 import 'package:res_publica/ui/widgets/app_circular_imagem.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -22,6 +24,7 @@ class FeedItemTile extends StatefulWidget {
 
 class _FeedItemTileState extends State<FeedItemTile> {
   UserEntity _user;
+  GlobalKey _reactButtonKey = GlobalKey();
 
   @override
   void initState() {
@@ -136,6 +139,7 @@ class _FeedItemTileState extends State<FeedItemTile> {
           Row(
             children: <Widget>[
               Expanded(
+                key: _reactButtonKey,
                 child: GestureDetector(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -144,13 +148,29 @@ class _FeedItemTileState extends State<FeedItemTile> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  onLongPress: () {
-//                    widget.bloc.dispatch(event)
+                  onLongPress: () async {
+                    var react = await showDialog<ReactEntity>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (con) {
+                          RenderBox renderReactButton =
+                              _reactButtonKey.currentContext.findRenderObject();
+                          return FeedReactSelect(
+                              offset:
+                                  renderReactButton.localToGlobal(Offset.zero));
+                        });
+                    if (react != null)
+                      widget.bloc.dispatch(FeedButtonReactPublicationPressed(
+                          react: react
+                            ..publicationId = widget.publication.publicationId
+                            ..createdAt = DateTime.now().toIso8601String()));
                   },
                   onTap: () {
                     widget.bloc.dispatch(FeedButtonReactPublicationPressed(
                         react: ReactEntity(
-                            publicationId: widget.publication.publicationId)));
+                            publicationId: widget.publication.publicationId,
+                            type: ReactType.LIKE,
+                            createdAt: DateTime.now().toIso8601String())));
                   },
                 ),
               ),
@@ -163,7 +183,14 @@ class _FeedItemTileState extends State<FeedItemTile> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (c) => ViewPublicationScreen(
+                              publication: widget.publication,
+                              reply: true,
+                              bloc: widget.bloc,
+                            )));
+                  },
                 ),
               ),
               Expanded(
@@ -175,7 +202,12 @@ class _FeedItemTileState extends State<FeedItemTile> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    widget.bloc.dispatch(FeedButtonFollowPublicationPressed(
+                        follow: FollowEntity(
+                            publicationId: widget.publication.publicationId,
+                            createdAt: DateTime.now().toIso8601String())));
+                  },
                 ),
               )
             ],
