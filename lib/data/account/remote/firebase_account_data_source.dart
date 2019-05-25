@@ -47,7 +47,7 @@ class FirebaseAccountDataSource implements AccountDataSource {
       await firestore
           .collection("users")
           .document(tUser.uid)
-          .setData(user.toJson());
+          .setData(user.toJson()..remove("password"));
       return RequestResponse<UserEntity>.success(_user);
     } catch (e) {
       return errorFirebase<UserEntity>(e, 400);
@@ -93,10 +93,9 @@ class FirebaseAccountDataSource implements AccountDataSource {
       fUserTemp.updateProfile(UserUpdateInfo()
         ..displayName = user.name
         ..photoUrl = photo);
-      await firestore
-          .collection("users")
-          .document(user.userId)
-          .setData(_adapterFirebaseUserToUser(fUserTemp).toJson(), merge: true);
+      await firestore.collection("users").document(user.userId).setData(
+          _adapterFirebaseUserToUser(fUserTemp).toJson()..remove("password"),
+          merge: true);
       return RequestResponse<UserEntity>.success(
           _adapterFirebaseUserToUser(fUserTemp));
     } catch (e) {
