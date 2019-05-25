@@ -5,6 +5,7 @@ import 'package:res_publica/model/react_entity.dart';
 import 'package:res_publica/model/user_entity.dart';
 import 'package:res_publica/ui/feed/bloc/bloc.dart';
 import 'package:res_publica/ui/feed/widgets/feed_item_player.dart';
+import 'package:res_publica/ui/publication/view_post_screen.dart';
 import 'package:res_publica/ui/widgets/app_circular_imagem.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -87,21 +88,46 @@ class _FeedItemTileState extends State<FeedItemTile> {
             padding: const EdgeInsets.only(
                 top: 8.0, right: 16.0, left: 16.0, bottom: 8.0),
             child: MarkdownBody(
-              data: widget.publication.subtitle,
+              data: widget.publication.subtitle.length < 150
+                  ? widget.publication.subtitle
+                  : widget.publication.subtitle.substring(0, 139).trim() +
+                      "... [ver mais](#vermais)",
+              onTapLink: (link) {
+                if (link == "#vermais")
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (c) => ViewPublicationScreen(
+                            publication: widget.publication,
+                            bloc: widget.bloc,
+                          )));
+              },
             ),
           ),
-          SizedBox(
-            height: MediaQuery.of(context).size.width,
+          AnimatedContainer(
+            duration: Duration(milliseconds: 250),
+            height: widget.publication.resources.isEmpty
+                ? 0.0
+                : MediaQuery.of(context).size.width,
             child: PageView.builder(
                 itemCount: widget.publication.resources.length,
+                onPageChanged: (page) {},
                 itemBuilder: (context, index) {
                   var res = widget.publication.resources[index];
                   if (res.type == PublicationResourceType.IMAGE)
-                    return Container(
-                      color: Colors.grey.shade300,
-                      child: Image.network(
-                        res.source,
-                        fit: BoxFit.cover,
+                    return GestureDetector(
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (c) => ViewPublicationScreen(
+                              publication: widget.publication,
+                              bloc: widget.bloc,
+                              sourceIndex: index,
+                            )));
+                      },
+                      child: Container(
+                        color: Colors.grey.shade300,
+                        child: Image.network(
+                          res.source,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     );
                   return FeedItemPlayer(url: res.source);
