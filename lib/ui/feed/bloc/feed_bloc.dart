@@ -30,11 +30,33 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   }
 
   @override
+  void onEvent(FeedEvent event) async {
+    var user = await accountDataSource.currentUser;
+    if (user == null) return;
+    if (event is FeedButtonReactPublicationPressed) {
+      _processingPublisher.sink.add(true);
+      await publicationDataSource
+          .reactInPublication(event.react..userId = user.userId);
+      _processingPublisher.sink.add(false);
+    } else if (event is FeedButtonFollowPublicationPressed) {
+      _processingPublisher.sink.add(true);
+      await publicationDataSource
+          .followPublication(event.follow..userId = user.userId);
+      _processingPublisher.sink.add(false);
+    } else if (event is FeedButtonRepliesPublicationPressed) {
+      _processingPublisher.sink.add(true);
+      await publicationDataSource
+          .replyToPublication(event.reply..userId = user.userId);
+      _processingPublisher.sink.add(false);
+    }
+  }
+
+  @override
   Stream<FeedState> mapEventToState(
     FeedEvent event,
   ) async* {
     if (event is FeedLoadMore && event == this._lastEvent) return;
-     _processingPublisher.sink.add(true);
+    _processingPublisher.sink.add(true);
     if (event is FeedLoadFeed) {
       var user = await accountDataSource.currentUser;
       var response;
