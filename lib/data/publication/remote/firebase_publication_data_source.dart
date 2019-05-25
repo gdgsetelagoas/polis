@@ -105,7 +105,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
       {int page, int itemPerPage}) async {
     try {
       var docs = await _publicationCollection
-          .where('user_id', arrayContains: userId)
+          .where('user_id', isEqualTo: userId)
           .getDocuments();
       return RequestResponse.success(docs.documents
           .map((doc) => PublicationEntity.fromJson(doc.data))
@@ -125,14 +125,12 @@ class FirebasePublicationDataSource extends PublicationDataSource {
       var docsIds = await _followCollection
           .where('user_id', isEqualTo: userId)
           .getDocuments();
-      var docs = await _publicationCollection
-          .where('publication_id',
-              arrayContains: docsIds.documents
-                  .map((d) => d['publication_id'].toString())
-                  .toList()
-                  .cast<String>())
-          .getDocuments();
-      return RequestResponse.success(docs.documents
+      var futures = docsIds.documents
+          .map((d) =>
+              _publicationCollection.document(d.data['publication_id']).get())
+          .toList();
+      var pubDocs = await Future.wait(futures);
+      return RequestResponse.success(pubDocs
           .map((doc) => PublicationEntity.fromJson(doc.data))
           .toList()
           .cast<PublicationEntity>());
@@ -172,7 +170,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
       var res = list[i];
       if (res.type == PublicationResourceType.IMAGE) {
         Image image = decodeImage(File(res.source).readAsBytesSync());
-        var imageForUpload = copyResize(image, 1024);
+        var imageForUpload = copyResize(image, width: 1024);
         var task = await _publicationStore
             .child('image/img_${DateTime.now().millisecondsSinceEpoch}.jpg')
             .putData(encodeJpg(imageForUpload, quality: 75))
