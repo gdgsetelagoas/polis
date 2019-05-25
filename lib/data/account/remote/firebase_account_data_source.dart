@@ -46,7 +46,7 @@ class FirebaseAccountDataSource implements AccountDataSource {
       _user = _adapterFirebaseUserToUser(tUser);
       await firestore
           .collection("users")
-          .document(user.userId)
+          .document(tUser.uid)
           .setData(user.toJson());
       return RequestResponse<UserEntity>.success(_user);
     } catch (e) {
