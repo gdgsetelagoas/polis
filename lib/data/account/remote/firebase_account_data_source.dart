@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,12 +10,14 @@ import 'package:res_publica/data/account/account_data_source.dart';
 import 'package:res_publica/data/util/errors.dart';
 import 'package:res_publica/model/request_response.dart';
 import 'package:res_publica/model/user_entity.dart';
+import 'package:res_publica/ui/utils/patterns.dart';
 
 class FirebaseAccountDataSource implements AccountDataSource {
   final FirebaseAuth firebaseAuth;
   final Firestore firestore;
   final FirebaseStorage firebaseStorage;
   UserEntity _user;
+  final Map<String, UserEntity> _users = {};
 
   FirebaseAccountDataSource({
     @required this.firebaseAuth,
@@ -41,6 +44,10 @@ class FirebaseAccountDataSource implements AccountDataSource {
           email: user.email, password: user.password);
       tUser.updateProfile(UserUpdateInfo()..displayName = user.name);
       _user = _adapterFirebaseUserToUser(tUser);
+      await firestore
+          .collection("users")
+          .document(user.userId)
+          .setData(user.toJson());
       return RequestResponse<UserEntity>.success(_user);
     } catch (e) {
       return errorFirebase<UserEntity>(e, 400);
@@ -72,12 +79,24 @@ class FirebaseAccountDataSource implements AccountDataSource {
 
   @override
   Future<RequestResponse<UserEntity>> updateAccount(UserEntity user) async {
+    var photo = user.photo;
     try {
-      var fUserTemp = await firebaseAuth.currentUser().then((fuser) {
-        fuser.updateProfile(UserUpdateInfo()
-          ..displayName = user.name
-          ..photoUrl = user.photo);
-      });
+      if (!isHttp.hasMatch(user.photo)) {
+        var task = await firebaseStorage
+            .ref()
+            .child('profile/${user.userId}.jpg')
+            .putFile(File(user.photo))
+            .onComplete;
+        photo = await task.ref.getDownloadURL();
+      }
+      var fUserTemp = await firebaseAuth.currentUser();
+      fUserTemp.updateProfile(UserUpdateInfo()
+        ..displayName = user.name
+        ..photoUrl = photo);
+      await firestore
+          .collection("users")
+          .document(user.userId)
+          .setData(_adapterFirebaseUserToUser(fUserTemp).toJson(), merge: true);
       return RequestResponse<UserEntity>.success(
           _adapterFirebaseUserToUser(fUserTemp));
     } catch (e) {
@@ -105,10 +124,7 @@ class FirebaseAccountDataSource implements AccountDataSource {
       ..userId = fUser.uid
       ..name = fUser.displayName
       ..email = fUser.email
-      ..photo = fUser.photoUrl
-      ..createdAt =
-          DateTime.fromMillisecondsSinceEpoch(fUser.metadata.creationTimestamp)
-              .toIso8601String();
+      ..photo = fUser.photoUrl;
     return user;
   }
 
@@ -117,10 +133,14 @@ class FirebaseAccountDataSource implements AccountDataSource {
       GoogleSignInAccount currentUser) async {
     try {
       var userGoogleAuthentication = await currentUser.authentication;
-      var user = _adapterFirebaseUserToUser(await firebaseAuth
+      _user = _adapterFirebaseUserToUser(await firebaseAuth
           .signInWithCredential(GoogleAuthProvider.getCredential(
               idToken: userGoogleAuthentication.idToken,
               accessToken: userGoogleAuthentication.accessToken)));
+      await firestore
+          .collection("users")
+          .document(user.userId)
+          .setData(user.toJson());
       return RequestResponse<UserEntity>.success(user);
     } catch (e) {
       return errorFirebase<UserEntity>(e, 400);
@@ -148,7 +168,13 @@ class FirebaseAccountDataSource implements AccountDataSource {
   }
 
   @override
-  Future<UserEntity> getUserById(String userId) {
-
+  Future<UserEntity> getUserById(String userId) async {
+    if (_users.containsKey(userId)) return _users[userId];
+    var doc = await firestore.collection("users").document(userId).get();
+    if (doc.exists) {
+      _users[userId] = UserEntity.fromJson(doc.data);
+      return _users[userId];
+    }
+    return UserEntity(name: "Desconhecido", photo: "");
   }
 }
