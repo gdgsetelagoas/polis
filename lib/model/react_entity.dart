@@ -35,6 +35,22 @@ class ReactEntity {
     data['react_id'] = this.reactId;
     return data..removeWhere((_, value) => value == null);
   }
+
+  String get name => const <ReactType, String>{
+        ReactType.LIKE: "Gostei",
+        ReactType.INDIGNANT: "Indignado",
+        ReactType.ASTONISHED: "Surpreendido",
+        ReactType.SUPPORT: "Apoio",
+        ReactType.ANGRY: "Raiva"
+      }[type];
+
+  String get symbol => const <ReactType, String>{
+        ReactType.LIKE: "👍🏼",
+        ReactType.INDIGNANT: "😖",
+        ReactType.ASTONISHED: "😲",
+        ReactType.SUPPORT: "🤞🏼",
+        ReactType.ANGRY: "😤"
+      }[type];
 }
 
 enum ReactType { LIKE, INDIGNANT, ASTONISHED, SUPPORT, ANGRY }
