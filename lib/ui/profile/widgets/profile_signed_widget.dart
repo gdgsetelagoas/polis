@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
 import 'package:res_publica/ui/profile/bloc/profile_events.dart';
 import 'package:res_publica/ui/profile/bloc/profile_states.dart';
+import 'package:res_publica/ui/publication/widgets/dialog_select_source.dart';
 import 'package:res_publica/ui/widgets/app_circular_imagem.dart';
 
 class ProfileSignedWidget extends StatefulWidget {
@@ -37,16 +42,38 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-                  child: AppCircularImage(
-                    (widget.state as ProfileSigned).user?.photo ?? "",
-                    borderSide: BorderSide(color: Colors.white, width: 6.0),
-                    size: 150.0,
-                    shadows: [
-                      BoxShadow(
-                          color: Colors.black38,
-                          offset: Offset(0, 6),
-                          blurRadius: 3.5)
-                    ],
+                  child: GestureDetector(
+                    onTap: widget.state is ProfileEditingName
+                        ? () async {
+                            var source = await showDialog<ImageSource>(
+                                context: context, builder: dialogImage);
+                            if (source == null) return;
+                            var file = await ImagePicker.pickImage(
+                                source: source);
+                            if (file == null) return;
+                            File croppedFile = await ImageCropper.cropImage(
+                              sourcePath: file.path,
+                              ratioX: 1.0,
+                              ratioY: 1.0,
+                              maxWidth: 512,
+                              maxHeight: 512,
+                            );
+                            if (croppedFile == null) return;
+                            bloc.dispatch(
+                                ProfileUpdatePhoto(path: croppedFile.path));
+                          }
+                        : null,
+                    child: AppCircularImage(
+                      (widget.state as ProfileSigned).user?.photo ?? "",
+                      borderSide: BorderSide(color: Colors.white, width: 6.0),
+                      size: 150.0,
+                      shadows: [
+                        BoxShadow(
+                            color: Colors.black38,
+                            offset: Offset(0, 6),
+                            blurRadius: 3.5)
+                      ],
+                    ),
                   ),
                 ),
                 Row(
@@ -103,7 +130,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
               RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                      text: "123",
+                      text: "0",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),
@@ -122,7 +149,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
               RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                      text: "20",
+                      text: "0",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),
@@ -141,7 +168,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
               RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                      text: "547",
+                      text: "0",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),

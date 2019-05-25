@@ -46,6 +46,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     if (event is ProfileUpdatingName && event.editing)
       yield ProfileEditingName();
 
+    if (event is ProfileUpdatePhoto) {
+      var user = await _accountDataSource.currentUser;
+      if (user == null)
+        yield ProfileNotSigned();
+      else {
+        var response =
+            await _accountDataSource.updateAccount(user..photo = event.path);
+        if (response.isSuccess)
+          yield ProfileSigned(user: response.data);
+        else {
+          yield ProfileSigned(user: user);
+          yield ProfileErrors(errors: response.errors);
+        }
+      }
+    }
+
     if (event is ProfileUpdateName) {
       var user = await _accountDataSource.currentUser;
       if (user == null)
