@@ -45,6 +45,10 @@ class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
               ),
             );
           if (state is PublicationErrors) return Container();
+          if (state is PublicationSuccessful)
+            return Center(
+              child: Icon(Icons.done),
+            );
           return Scaffold(
             appBar: AppBar(
               title: Text(

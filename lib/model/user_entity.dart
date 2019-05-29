@@ -7,6 +7,10 @@ class UserEntity {
   String photo;
   String createdAt;
   String email;
+  int numPublications;
+  int numFollows;
+  int numReactions;
+  int numFollowers;
 
   UserEntity(
       {this.password,
@@ -16,7 +20,11 @@ class UserEntity {
       this.cpf,
       this.photo,
       this.createdAt,
-      this.email});
+      this.email,
+      this.numPublications = 0,
+      this.numFollows = 0,
+      this.numReactions = 0,
+      this.numFollowers = 0});
 
   UserEntity.fromJson(Map<String, dynamic> json) {
     password = json['password'];
@@ -27,6 +35,10 @@ class UserEntity {
     photo = json['photo'];
     createdAt = json['created_at'];
     email = json['email'];
+    numPublications = json['num_publications'];
+    numFollows = json['num_follows'];
+    numReactions = json['num_reactions'];
+    numFollowers = json['num_followers'];
   }
 
   Map<String, dynamic> toJson() {
@@ -39,6 +51,10 @@ class UserEntity {
     data['photo'] = this.photo;
     data['created_at'] = this.createdAt;
     data['email'] = this.email;
+    data['num_publications'] = this.numPublications;
+    data['num_follows'] = this.numFollows;
+    data['num_reactions'] = this.numReactions;
+    data['num_followers'] = this.numFollowers;
     return data..removeWhere((_, value) => value == null);
   }
 }

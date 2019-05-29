@@ -12,6 +12,7 @@ import 'package:res_publica/model/publication_entity.dart';
 import 'package:res_publica/model/react_entity.dart';
 import 'package:res_publica/model/reply_entity.dart';
 import 'package:res_publica/model/request_response.dart';
+import 'package:res_publica/model/user_entity.dart';
 
 class FirebasePublicationDataSource extends PublicationDataSource {
   final Firestore firestore;
@@ -155,10 +156,24 @@ class FirebasePublicationDataSource extends PublicationDataSource {
             ..resources = uploadedFiles)
           .toJson());
       publication.publicationId = doc.documentID;
-      await doc
-          .setData({"publication_id": publication.publicationId}, merge: true);
+      doc.setData({"publication_id": publication.publicationId}, merge: true);
+      firestore.runTransaction((Transaction transaction) {
+        transaction
+            .get(firestore.collection("users").document(user.userId))
+            .then((ref) {
+          var tUser = UserEntity.fromJson(ref.data);
+          tUser
+            ..numPublications = (tUser.numPublications + 1)
+            ..updatedAt = DateTime.now().toIso8601String();
+          transaction.update(ref.reference, tUser.toJson());
+        });
+        return null;
+      }).then((map) {
+        print(map);
+      });
       return RequestResponse.success(publication);
     } catch (e) {
+      print(e);
       return errorFirebase<PublicationEntity>(e, 23);
     }
   }

@@ -48,8 +48,8 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                             var source = await showDialog<ImageSource>(
                                 context: context, builder: dialogImage);
                             if (source == null) return;
-                            var file = await ImagePicker.pickImage(
-                                source: source);
+                            var file =
+                                await ImagePicker.pickImage(source: source);
                             if (file == null) return;
                             File croppedFile = await ImageCropper.cropImage(
                               sourcePath: file.path,
@@ -130,7 +130,8 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
               RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                      text: "0",
+                      text:
+                          "${(widget.state as ProfileSigned)?.user?.numPublications ?? 0}",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),
@@ -149,7 +150,8 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
               RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                      text: "0",
+                      text:
+                          "${(widget.state as ProfileSigned)?.user?.numFollows ?? 0}",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),
@@ -168,7 +170,28 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
               RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                      text: "0",
+                      text:
+                          "${(widget.state as ProfileSigned)?.user?.numFollowers ?? 0}",
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          color: Theme.of(context).primaryColor),
+                      children: [
+                        TextSpan(
+                            text: "\nSeguidores",
+                            style: TextStyle(
+                                color: Colors.grey.shade600, fontSize: 12.0))
+                      ])),
+              Container(
+                color: Colors.grey.shade400,
+                width: 1.0,
+                height: 16.0,
+                child: Center(),
+              ),
+              RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                      text:
+                          "${(widget.state as ProfileSigned)?.user?.numReactions ?? 0}",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),
