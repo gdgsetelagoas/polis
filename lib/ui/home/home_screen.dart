@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           icon: Icon(
             Icons.settings,
-            color: Colors.white,
+            color: Colors.black,
           ),
           tooltip: "Configurações",
         )

@@ -95,7 +95,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                                 : InputBorder.none,
                             enabled: widget.state is ProfileEditingName,
                           ),
-                          style: TextStyle(color: Colors.white, fontSize: 24.0),
+                          style: TextStyle(color: Colors.black, fontSize: 24.0),
                           onSubmitted: (name) {
                             bloc.dispatch(
                                 ProfileUpdateName(name: _nameController.text));
@@ -105,19 +105,19 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                     ),
                     widget.state is ProfileEditingName
                         ? IconButton(
-                            icon: Icon(Icons.done, color: Colors.white),
+                            icon: Icon(Icons.done, color: Colors.black),
                             alignment: Alignment.centerLeft,
                             onPressed: () => bloc.dispatch(
                                 ProfileUpdateName(name: _nameController.text)))
                         : IconButton(
-                            icon: Icon(Icons.edit, color: Colors.white),
+                            icon: Icon(Icons.edit, color: Colors.black),
                             alignment: Alignment.centerLeft,
                             onPressed: () => bloc
                                 .dispatch(ProfileUpdatingName(editing: true)))
                   ],
                 ),
                 Text((widget.state as ProfileSigned).user?.email ?? "",
-                    style: TextStyle(color: Colors.white, fontSize: 14.0)),
+                    style: TextStyle(color: Colors.black, fontSize: 14.0)),
               ],
             ),
           ),
