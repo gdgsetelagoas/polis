@@ -57,10 +57,10 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: FlatButton(
                   onPressed: () async {
-                    if (await canLaunch(
-                        "https://firebasestorage.googleapis.com/v0/b/res-publica-76d21.appspot.com/o/terms%2Fterms-v1.pdf?alt=media&token=1daa72d5-acdb-4c10-8916-55888dedc220")) {
-                      launch(
-                          "https://firebasestorage.googleapis.com/v0/b/res-publica-76d21.appspot.com/o/terms%2Fterms-v1.pdf?alt=media&token=1daa72d5-acdb-4c10-8916-55888dedc220");
+                    var url =
+                        "https://firebasestorage.googleapis.com/v0/b/res-publica-76d21.appspot.com/o/terms%2Fterms-v1.pdf?alt=media&token=6a2d5b1d-0488-48e0-aed9-6b612dff3732";
+                    if (await canLaunch(url)) {
+                      launch(url);
                     }
                   },
                   child: Row(
