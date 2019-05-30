@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Res Publica - Alpha',
       theme: ThemeData(
-        primarySwatch: AppColors.newColor(Color(0xFFFFE135)),
-      ),
+          primarySwatch: AppColors.newColor(Color(0xFFFFE135)),
+          textTheme: Theme.of(context).textTheme.copyWith()),
       home: HomeScreen(),
     );
   }

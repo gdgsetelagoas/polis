@@ -108,7 +108,10 @@ class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
                           AppTextFormField(
                             textHint: "Descreva aqui o problema encontrado",
                             maxLines: 6,
-                            textInputAction: TextInputAction.done,
+                            textInputAction: TextInputAction.newline,
+                            textColor: Colors.black87,
+                            cursorColor: Colors.grey.shade900,
+                            outlineColor: Theme.of(context).primaryColor,
                             controller: _body,
                           ),
                         ]),

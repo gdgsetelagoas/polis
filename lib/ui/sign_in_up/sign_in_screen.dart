@@ -84,6 +84,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     nextFocusNode: _passwordFocusNode,
                     regexValidator: Patterns.email,
                     validatorMsgError: "Email inválido.",
+                    textColor: Colors.black,
                     decoration: InputDecoration(
                       labelText: "Email",
                       prefixIcon: Icon(Icons.alternate_email),
@@ -113,6 +114,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       cursorColor: Theme.of(context).primaryColor,
                       regexValidator: RegExp(r".{6,}"),
                       validatorMsgError: "Senha muito curta.",
+                      textColor: Colors.black,
                       decoration: InputDecoration(
                         focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(

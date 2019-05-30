@@ -64,7 +64,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             top: (MediaQuery.of(context).size.height * 0.10),
                             bottom: 32.0),
                         child: Icon(
-                          FontAwesomeIcons.userCircle,
+                          FontAwesomeIcons.userNinja,
                           size: 160.0,
                           color: Theme.of(context).primaryColor,
                         ),
@@ -79,6 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         nextFocusNode: _emailFocusNode,
                         regexValidator: Patterns.fullName,
                         validatorMsgError: "Precisa ser nome completo.",
+                        textColor: Colors.black,
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.person),
                           labelText: "Nome Completo",
@@ -108,6 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           nextFocusNode: _cpfFocusNode,
                           regexValidator: Patterns.email,
                           validatorMsgError: "Email inválido.",
+                          textColor: Colors.black,
                           decoration: InputDecoration(
                             labelText: "Email",
                             prefixIcon: Icon(Icons.alternate_email),
@@ -135,6 +137,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         controller: _cpfController,
                         focusNode: _cpfFocusNode,
                         nextFocusNode: _passwordFocusNode,
+                        textColor: Colors.black,
                         inputFormatters: [
                           WhitelistingTextInputFormatter.digitsOnly,
                           CpfFormatMark()
@@ -170,6 +173,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           focusNode: _passwordFocusNode,
                           regexValidator: RegExp(r".{6,}"),
                           validatorMsgError: "Senha muito curta.",
+                          textColor: Colors.black,
                           decoration: InputDecoration(
                             focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(

@@ -36,18 +36,17 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: Icon(
           Icons.note_add,
-          color: Colors.white,
         ),
       ),
       appBar: AppBar(
         title:
-            Text(_titles[_actualPage], style: TextStyle(color: Colors.white)),
+            Text(_titles[_actualPage]),
         centerTitle: true,
         actions: _actions[_actualPage],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        unselectedItemColor: Theme.of(context).primaryColor,
-        selectedItemColor: Theme.of(context).primaryColorDark,
+        unselectedItemColor: Colors.black,
+        selectedItemColor: Theme.of(context).primaryColor,
         currentIndex: _actualPage,
         items: [
           BottomNavigationBarItem(

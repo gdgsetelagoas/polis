@@ -64,7 +64,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         response = await publicationDataSource.publicationsFollowed(user.userId,
             page: _page, itemPerPage: _itemsPerPage);
       else if (event.feedContext == FeedContext.MINE)
-        response = await publicationDataSource.myPublications(user.userId,
+        response = await publicationDataSource.myPublications(user?.userId,
             page: _page, itemPerPage: _itemsPerPage);
       else
         response = await publicationDataSource.feed(
