@@ -157,20 +157,6 @@ class FirebasePublicationDataSource extends PublicationDataSource {
           .toJson());
       publication.publicationId = doc.documentID;
       doc.setData({"publication_id": publication.publicationId}, merge: true);
-      firestore.runTransaction((Transaction transaction) {
-        transaction
-            .get(firestore.collection("users").document(user.userId))
-            .then((ref) {
-          var tUser = UserEntity.fromJson(ref.data);
-          tUser
-            ..numPublications = (tUser.numPublications + 1)
-            ..updatedAt = DateTime.now().toIso8601String();
-          transaction.update(ref.reference, tUser.toJson());
-        });
-        return null;
-      }).then((map) {
-        print(map);
-      });
       return RequestResponse.success(publication);
     } catch (e) {
       print(e);
