@@ -70,7 +70,9 @@ class FirebaseAccountDataSource implements AccountDataSource {
     try {
       var fUser = await firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      _user = _adapterFirebaseUserToUser(fUser);
+      var userDoc =
+          await firestore.collection("users").document(fUser.uid).get();
+      _user = UserEntity.fromJson(userDoc.data);
       return RequestResponse<UserEntity>.success(_user);
     } catch (e) {
       return errorFirebase<UserEntity>(e, 400);
@@ -148,8 +150,11 @@ class FirebaseAccountDataSource implements AccountDataSource {
 
   @override
   Future<UserEntity> get currentUser async {
-    var u = await firebaseAuth.currentUser();
-    _user = _adapterFirebaseUserToUser(u);
+    if (_user == null) {
+      var u = await firebaseAuth.currentUser();
+      var userDoc = await firestore.collection("users").document(u.uid).get();
+      _user = UserEntity.fromJson(userDoc.data);
+    }
     return _user;
   }
 
