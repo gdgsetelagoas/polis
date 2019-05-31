@@ -140,12 +140,14 @@ class _FeedItemTileState extends State<FeedItemTile> {
             children: <Widget>[
               Expanded(
                 key: _reactButtonKey,
-                child: GestureDetector(
+                child: InkWell(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      "${widget.publication.numReacts} Reaç${widget.publication.numReacts > 1 ? "ôes" : "ão"}",
-                      textAlign: TextAlign.center,
+                    child: Center(
+                      child: Text(
+                        "${widget.publication.numReacts} Reaç${widget.publication.numReacts > 1 ? "ôes" : "ão"}",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                   onLongPress: () async {
@@ -175,12 +177,14 @@ class _FeedItemTileState extends State<FeedItemTile> {
                 ),
               ),
               Expanded(
-                child: GestureDetector(
+                child: InkWell(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      "${widget.publication.numReplies} Comentário${widget.publication.numReplies > 1 ? "s" : ""}",
-                      textAlign: TextAlign.center,
+                    child: Center(
+                      child: Text(
+                        "${widget.publication.numReplies} Comentário${widget.publication.numReplies > 1 ? "s" : ""}",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                   onTap: () {
@@ -194,12 +198,14 @@ class _FeedItemTileState extends State<FeedItemTile> {
                 ),
               ),
               Expanded(
-                child: GestureDetector(
+                child: InkWell(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      "${widget.publication.numFollowers} Seguidor${widget.publication.numFollowers > 1 ? "res" : ""}",
-                      textAlign: TextAlign.center,
+                    child: Center(
+                      child: Text(
+                        "${widget.publication.numFollowers} Seguidor${widget.publication.numFollowers > 1 ? "res" : ""}",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                   onTap: () {

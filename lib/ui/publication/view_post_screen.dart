@@ -124,7 +124,7 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
               children: <Widget>[
                 Expanded(
                   key: _reactButtonKey,
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
@@ -160,7 +160,7 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
                   ),
                 ),
                 Expanded(
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
@@ -179,7 +179,7 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
                   ),
                 ),
                 Expanded(
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
