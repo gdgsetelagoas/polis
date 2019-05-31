@@ -36,7 +36,8 @@ class Injector {
   Future _registerFirebase() async {
     _container.register<FirebaseAuth>((c) => FirebaseAuth.instance,
         name: "FirebaseAuth");
-    _container.register<Firestore>((c) => Firestore.instance,
+    _container.register<Firestore>(
+        (c) => Firestore.instance..settings(persistenceEnabled: true),
         name: "Firestore");
     _container.register<FirebaseStorage>((c) => FirebaseStorage.instance,
         name: "FirebaseStorage");
