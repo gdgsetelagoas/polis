@@ -43,12 +43,13 @@ class FirebaseAccountDataSource implements AccountDataSource {
       var tUser = await firebaseAuth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
       tUser.updateProfile(UserUpdateInfo()..displayName = user.name);
-      _user = _adapterFirebaseUserToUser(tUser);
+      var _userT = _adapterFirebaseUserToUser(tUser);
       await firestore
           .collection("users")
           .document(tUser.uid)
           .setData(user.toJson()..remove("password"));
-      return RequestResponse<UserEntity>.success(_user);
+
+      return RequestResponse<UserEntity>.success(_userT);
     } catch (e) {
       return errorFirebase<UserEntity>(e, 400);
     }
@@ -134,7 +135,7 @@ class FirebaseAccountDataSource implements AccountDataSource {
       GoogleSignInAccount currentUser) async {
     try {
       var userGoogleAuthentication = await currentUser.authentication;
-      _user = _adapterFirebaseUserToUser(await firebaseAuth
+      var user = _adapterFirebaseUserToUser(await firebaseAuth
           .signInWithCredential(GoogleAuthProvider.getCredential(
               idToken: userGoogleAuthentication.idToken,
               accessToken: userGoogleAuthentication.accessToken)));
@@ -168,7 +169,13 @@ class FirebaseAccountDataSource implements AccountDataSource {
 
   @override
   Stream<UserEntity> onAuthStateChange() {
-    return firebaseAuth.onAuthStateChanged.map(_adapterFirebaseUserToUser);
+    return firebaseAuth.onAuthStateChanged
+        .asyncMap<UserEntity>((firebaseUser) async {
+      if (firebaseUser == null)
+        return null;
+      else
+        return await currentUser;
+    });
   }
 
   @override
