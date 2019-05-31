@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:res_publica/main.dart';
 import 'package:res_publica/ui/feed/bloc/bloc.dart';
 import 'package:res_publica/ui/feed/feed_page.dart';
+import 'package:res_publica/ui/links/links_page.dart';
 import 'package:res_publica/ui/obs/obs_page.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
 import 'package:res_publica/ui/profile/profile_page.dart';
@@ -18,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _titles = ["Feed", "Meus Posts", "Posts que sigo", "OBS", "Perfil"];
+  final _titles = ["Feed", "Posts que sigo", "Links", "OBS", "Perfil"];
   List<List<Widget>> _actions;
   int _actualPage = 0;
   var _pageController = PageController();
@@ -39,8 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       appBar: AppBar(
-        title:
-            Text(_titles[_actualPage]),
+        title: Text(_titles[_actualPage]),
         centerTitle: true,
         actions: _actions[_actualPage],
       ),
@@ -54,11 +54,11 @@ class _HomeScreenState extends State<HomeScreen> {
             title: Text(_titles[0]),
           ),
           BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.clipboard),
+            icon: Icon(FontAwesomeIcons.clipboardList),
             title: Text(_titles[1]),
           ),
           BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.clipboardList),
+            icon: Icon(FontAwesomeIcons.link),
             title: Text(_titles[2]),
           ),
           BottomNavigationBarItem(
@@ -85,8 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         children: <Widget>[
           FeedPage(feedContext: FeedContext.GENERAL),
-          FeedPage(feedContext: FeedContext.MINE),
           FeedPage(feedContext: FeedContext.FOLLOWED),
+          LinksPage(),
           OBSPage(),
           BlocProvider(
             bloc: injector.get<ProfileBloc>("ProfileBloc"),
