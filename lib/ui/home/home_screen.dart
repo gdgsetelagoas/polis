@@ -27,18 +27,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (c) => BlocProvider(
-                    bloc: injector.get<PublicationBloc>("PublicationBloc"),
-                    child: CreatePublicationScreen(),
-                  )));
-        },
-        child: Icon(
-          Icons.note_add,
-        ),
-      ),
+      floatingActionButton: _titles[_actualPage] == "Perfil"
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (c) => BlocProvider(
+                          bloc:
+                              injector.get<PublicationBloc>("PublicationBloc"),
+                          child: CreatePublicationScreen(),
+                        )));
+              },
+              child: Icon(
+                Icons.note_add,
+              ),
+            ),
       appBar: AppBar(
         title: Text(_titles[_actualPage]),
         centerTitle: true,
