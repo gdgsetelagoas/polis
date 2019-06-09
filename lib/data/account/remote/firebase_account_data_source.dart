@@ -97,7 +97,12 @@ class FirebaseAccountDataSource implements AccountDataSource {
         ..displayName = user.name
         ..photoUrl = photo);
       await firestore.collection("users").document(user.userId).setData(
-          _adapterFirebaseUserToUser(fUserTemp).toJson()..remove("password"),
+          _adapterFirebaseUserToUser(fUserTemp).toJson()
+            ..remove("password")
+            ..remove("num_followers")
+            ..remove("num_reactions")
+            ..remove("num_follows")
+            ..remove("num_publications"),
           merge: true);
       return RequestResponse<UserEntity>.success(
           _adapterFirebaseUserToUser(fUserTemp));
@@ -153,6 +158,7 @@ class FirebaseAccountDataSource implements AccountDataSource {
   Future<UserEntity> get currentUser async {
     if (_user == null) {
       var u = await firebaseAuth.currentUser();
+      if (u == null) return null;
       var userDoc = await firestore.collection("users").document(u.uid).get();
       _user = UserEntity.fromJson(userDoc.data);
     }
