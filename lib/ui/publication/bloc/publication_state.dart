@@ -80,3 +80,10 @@ class PublicationCancel extends PublicationState {
     return 'PublicationCancel{isCancel: $isCancel}';
   }
 }
+
+class PublicationEmpty extends PublicationState {
+  @override
+  String toString() {
+    return 'PublicationEmpty{}';
+  }
+}

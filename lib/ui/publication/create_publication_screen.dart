@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:res_publica/model/publication_entity.dart';
@@ -211,6 +212,11 @@ class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
               .then((cancel) {
             if (cancel ?? false) Navigator.of(context).pop();
           });
+        if (state is PublicationEmpty) {
+          Fluttertoast.showToast(
+              msg: "Ops, nada será publicado!", toastLength: Toast.LENGTH_LONG);
+          Navigator.of(context).pop();
+        }
       },
     );
   }

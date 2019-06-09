@@ -30,12 +30,17 @@ class PublicationBloc extends Bloc<PublicationEvent, PublicationState> {
     var user = await accountDataSource.currentUser;
     _lastState = PublicationCreate(user: user);
     if (event is PublicationPublishButtonPressed) {
-      event.publication..userId = user.userId;
-      var response = await publicationDataSource.publish(event.publication);
-      if (response.isSuccess)
-        _lastState = PublicationSuccessful(response.data);
-      else
-        _lastState = PublicationErrors(response.errors);
+      if (event.publication.resources.isNotEmpty &&
+          event.publication.subtitle.isNotEmpty) {
+        event.publication..userId = user.userId;
+        var response = await publicationDataSource.publish(event.publication);
+        if (response.isSuccess)
+          _lastState = PublicationSuccessful(response.data);
+        else
+          _lastState = PublicationErrors(response.errors);
+      } else {
+        yield PublicationEmpty();
+      }
     }
     if (event is PublicationCancelButtonPressed) {
       yield PublicationCancel();
