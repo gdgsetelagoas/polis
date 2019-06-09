@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
 import 'package:res_publica/ui/profile/bloc/profile_events.dart';
 import 'package:res_publica/ui/profile/bloc/profile_states.dart';
@@ -21,6 +22,7 @@ class ProfileSignedWidget extends StatefulWidget {
 
 class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
   final TextEditingController _nameController = TextEditingController();
+  NumberFormat _numberFormat = NumberFormat.compact(locale: "pt_BR");
 
   @override
   void initState() {
@@ -131,7 +133,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                   textAlign: TextAlign.center,
                   text: TextSpan(
                       text:
-                          "${(widget.state as ProfileSigned)?.user?.numPublications ?? 0}",
+                          "${_numberFormat.format((widget.state as ProfileSigned)?.user?.numPublications ?? 0)}",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),
@@ -151,7 +153,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                   textAlign: TextAlign.center,
                   text: TextSpan(
                       text:
-                          "${(widget.state as ProfileSigned)?.user?.numFollows ?? 0}",
+                          "${_numberFormat.format((widget.state as ProfileSigned)?.user?.numFollows ?? 0)}",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),
@@ -171,7 +173,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                   textAlign: TextAlign.center,
                   text: TextSpan(
                       text:
-                          "${(widget.state as ProfileSigned)?.user?.numFollowers ?? 0}",
+                          "${_numberFormat.format((widget.state as ProfileSigned)?.user?.numFollowers ?? 0)}",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),
@@ -191,7 +193,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                   textAlign: TextAlign.center,
                   text: TextSpan(
                       text:
-                          "${(widget.state as ProfileSigned)?.user?.numReactions ?? 0}",
+                          "${_numberFormat.format((widget.state as ProfileSigned)?.user?.numReactions ?? 0)}",
                       style: TextStyle(
                           fontSize: 18.0,
                           color: Theme.of(context).primaryColor),
