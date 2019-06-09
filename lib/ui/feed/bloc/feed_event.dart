@@ -77,3 +77,32 @@ class FeedButtonFollowPublicationPressed extends FeedEvent {
     return 'FeedButtonFollowPublicationPressed{entity: $follow}';
   }
 }
+
+class FeedButtonSignUpPublicationPressed extends FeedEvent {
+  FeedButtonSignUpPublicationPressed();
+
+  @override
+  String toString() {
+    return 'FeedButtonSignUpPublicationPressed{}';
+  }
+}
+
+class FeedButtonSignInPublicationPressed extends FeedEvent {
+  FeedButtonSignInPublicationPressed();
+
+  @override
+  String toString() {
+    return 'FeedButtonSignInPublicationPressed{}';
+  }
+}
+
+class FeedButtonMenuItemPressed extends FeedEvent {
+  final String option;
+
+  FeedButtonMenuItemPressed({@required this.option});
+
+  @override
+  String toString() {
+    return 'FeedButtonMenuItemPressed{option: $option}';
+  }
+}
