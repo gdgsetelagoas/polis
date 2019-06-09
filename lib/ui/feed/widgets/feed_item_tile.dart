@@ -13,9 +13,14 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class FeedItemTile extends StatefulWidget {
   final PublicationEntity publication;
+  final UserEntity user;
   final FeedBloc bloc;
 
-  const FeedItemTile({Key key, @required this.publication, @required this.bloc})
+  const FeedItemTile(
+      {Key key,
+      @required this.publication,
+      @required this.bloc,
+      @required this.user})
       : super(key: key);
 
   @override
@@ -50,7 +55,7 @@ class _FeedItemTileState extends State<FeedItemTile> {
             padding: const EdgeInsets.only(
                 top: 16.0, bottom: 8.0, left: 8.0, right: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Padding(
@@ -69,7 +74,7 @@ class _FeedItemTileState extends State<FeedItemTile> {
                     ],
                   ),
                 ),
-                Flexible(
+                Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,12 +83,44 @@ class _FeedItemTileState extends State<FeedItemTile> {
                         _user?.name ?? "🔌 Carregando..",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18.0),
+                        maxLines: 1,
                       ),
                       Text(
                           "  ${timeago.format(widget.publication.createdAt, locale: "pt_BR")}"),
                     ],
                   ),
-                )
+                ),
+                PopupMenuButton<String>(
+                  itemBuilder: (c) {
+                    if (widget.user != null &&
+                        widget.user.userId == widget.publication.userId)
+                      return [
+                        PopupMenuItem<String>(
+                          child: Text("Denunciar..."),
+                          value: "denunciar",
+                        ),
+                        PopupMenuItem<String>(
+                          child: Text("Editar"),
+                          value: "editar",
+                        ),
+                        PopupMenuItem<String>(
+                          child: Text("Excluir"),
+                          value: "excluir",
+                        ),
+                      ];
+                    return [
+                      PopupMenuItem<String>(
+                        child: Text("Denunciar..."),
+                        value: "denunciar",
+                      )
+                    ];
+                  },
+                  tooltip: "Mais Opções",
+                  onSelected: (item) {
+                    widget.bloc
+                        .dispatch(FeedButtonMenuItemPressed(option: item));
+                  },
+                ),
               ],
             ),
           ),
@@ -150,30 +187,41 @@ class _FeedItemTileState extends State<FeedItemTile> {
                       ),
                     ),
                   ),
-                  onLongPress: () async {
-                    var react = await showDialog<ReactEntity>(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (con) {
-                          RenderBox renderReactButton =
-                              _reactButtonKey.currentContext.findRenderObject();
-                          return FeedReactSelect(
-                              offset:
-                                  renderReactButton.localToGlobal(Offset.zero));
-                        });
-                    if (react != null)
-                      widget.bloc.dispatch(FeedButtonReactPublicationPressed(
-                          react: react
-                            ..publicationId = widget.publication.publicationId
-                            ..createdAt = DateTime.now().toIso8601String()));
-                  },
-                  onTap: () {
-                    widget.bloc.dispatch(FeedButtonReactPublicationPressed(
-                        react: ReactEntity(
-                            publicationId: widget.publication.publicationId,
-                            type: ReactType.LIKE,
-                            createdAt: DateTime.now().toIso8601String())));
-                  },
+                  onLongPress: widget.user == null
+                      ? _loginDialog
+                      : () async {
+                          var react = await showDialog<ReactEntity>(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (con) {
+                                RenderBox renderReactButton = _reactButtonKey
+                                    .currentContext
+                                    .findRenderObject();
+                                return FeedReactSelect(
+                                    offset: renderReactButton
+                                        .localToGlobal(Offset.zero));
+                              });
+                          if (react != null)
+                            widget.bloc.dispatch(
+                                FeedButtonReactPublicationPressed(
+                                    react: react
+                                      ..publicationId =
+                                          widget.publication.publicationId
+                                      ..createdAt =
+                                          DateTime.now().toIso8601String()));
+                        },
+                  onTap: widget.user == null
+                      ? _loginDialog
+                      : () {
+                          widget.bloc.dispatch(
+                              FeedButtonReactPublicationPressed(
+                                  react: ReactEntity(
+                                      publicationId:
+                                          widget.publication.publicationId,
+                                      type: ReactType.LIKE,
+                                      createdAt:
+                                          DateTime.now().toIso8601String())));
+                        },
                 ),
               ),
               Expanded(
@@ -208,12 +256,19 @@ class _FeedItemTileState extends State<FeedItemTile> {
                       ),
                     ),
                   ),
-                  onTap: () {
-                    widget.bloc.dispatch(FeedButtonFollowPublicationPressed(
-                        follow: FollowEntity(
-                            publicationId: widget.publication.publicationId,
-                            createdAt: DateTime.now().toIso8601String())));
-                  },
+                  onTap: widget.user == null
+                      ? _loginDialog
+                      : widget.user.userId == widget.publication.userId
+                          ? null
+                          : () {
+                              widget.bloc.dispatch(
+                                  FeedButtonFollowPublicationPressed(
+                                      follow: FollowEntity(
+                                          publicationId:
+                                              widget.publication.publicationId,
+                                          createdAt: DateTime.now()
+                                              .toIso8601String())));
+                            },
                 ),
               )
             ],
@@ -221,5 +276,31 @@ class _FeedItemTileState extends State<FeedItemTile> {
         ],
       ),
     );
+  }
+
+  void _loginDialog() {
+    showDialog(
+        context: context,
+        builder: (c) => AlertDialog(
+              title: Text("Entrar"),
+              content:
+                  Text("Você precisa de está logado para completar essa ação"),
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () {
+                      widget.bloc
+                          .dispatch(FeedButtonSignInPublicationPressed());
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Registrar")),
+                FlatButton(
+                    onPressed: () {
+                      widget.bloc
+                          .dispatch(FeedButtonSignUpPublicationPressed());
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Entrar"))
+              ],
+            ));
   }
 }
