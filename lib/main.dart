@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Res Publica - Alpha',
+      title: 'Res Publica - Beta',
       theme: ThemeData(
           primarySwatch: AppColors.newColor(Color(0xFFFFE135)),
           textTheme: Theme.of(context).textTheme.copyWith()),
