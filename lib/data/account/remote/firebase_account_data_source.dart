@@ -42,11 +42,11 @@ class FirebaseAccountDataSource implements AccountDataSource {
     try {
       var tUser = await firebaseAuth.createUserWithEmailAndPassword(
           email: user.email, password: user.password);
-      tUser.updateProfile(UserUpdateInfo()..displayName = user.name);
-      var _userT = _adapterFirebaseUserToUser(tUser);
+      tUser.user.updateProfile(UserUpdateInfo()..displayName = user.name);
+      var _userT = _adapterFirebaseUserToUser(tUser.user);
       await firestore
           .collection("users")
-          .document(tUser.uid)
+          .document(tUser.user.uid)
           .setData(user.toJson()..remove("password"));
 
       return RequestResponse<UserEntity>.success(_userT);
@@ -72,7 +72,7 @@ class FirebaseAccountDataSource implements AccountDataSource {
       var fUser = await firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       var userDoc =
-          await firestore.collection("users").document(fUser.uid).get();
+          await firestore.collection("users").document(fUser.user.uid).get();
       _user = UserEntity.fromJson(userDoc.data);
       return RequestResponse<UserEntity>.success(_user);
     } catch (e) {
@@ -140,16 +140,18 @@ class FirebaseAccountDataSource implements AccountDataSource {
       GoogleSignInAccount currentUser) async {
     try {
       var userGoogleAuthentication = await currentUser.authentication;
-      var user = _adapterFirebaseUserToUser(await firebaseAuth
-          .signInWithCredential(GoogleAuthProvider.getCredential(
-              idToken: userGoogleAuthentication.idToken,
-              accessToken: userGoogleAuthentication.accessToken)));
+      var user = _adapterFirebaseUserToUser((await firebaseAuth
+              .signInWithCredential(GoogleAuthProvider.getCredential(
+                  idToken: userGoogleAuthentication.idToken,
+                  accessToken: userGoogleAuthentication.accessToken)))
+          .user);
       await firestore
           .collection("users")
           .document(user.userId)
           .setData(user.toJson());
       return RequestResponse<UserEntity>.success(user);
-    } catch (e) {
+    } catch (e, stack) {
+      print("$e\n$stack");
       return errorFirebase<UserEntity>(e, 400);
     }
   }
