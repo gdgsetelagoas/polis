@@ -32,8 +32,8 @@ class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<PublicationEvent, PublicationState>(
-      child: BlocBuilder<PublicationEvent, PublicationState>(
+    return BlocListener<PublicationBloc, PublicationState>(
+      child: BlocBuilder<PublicationBloc, PublicationState>(
         bloc: _bloc,
         builder: (BuildContext context, PublicationState state) {
           if (state is PublicationProcessing)

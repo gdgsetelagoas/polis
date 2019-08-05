@@ -30,16 +30,19 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        BlocBuilder<ProfileEvent, ProfileState>(
+        BlocBuilder<ProfileBloc, ProfileState>(
           bloc: bloc,
           builder: (con, state) {
             if (state is ProfileNotSigned)
               _lastState = BlocProvider(
-                bloc: bloc,
+                builder: (_) => bloc,
                 child: ProfileNoSignedWidget(),
               );
             if (state is ProfileEditingName || state is ProfileSigned)
-              _lastState = ProfileSignedWidget(state: state);
+              _lastState = ProfileSignedWidget(
+                state: state,
+                bloc: bloc,
+              );
             return _lastState;
           },
         ),
@@ -47,7 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
           right: 0,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: BlocBuilder<ProfileEvent, ProfileState>(
+            child: BlocBuilder<ProfileBloc, ProfileState>(
               bloc: bloc,
               builder: (context, state) {
                 if (state is ProfileLoading) return CircularProgressIndicator();
@@ -65,7 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
       Navigator.of(context)
           .push(MaterialPageRoute(
               builder: (c) => BlocProvider(
-                    bloc: injector.get<SignBloc>("SignBloc"),
+                    builder: (_) => injector.get<SignBloc>("SignBloc"),
                     child: SignInScreen(),
                   )))
           .then((user) {

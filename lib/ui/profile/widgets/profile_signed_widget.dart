@@ -15,8 +15,10 @@ import 'package:res_publica/ui/widgets/app_circular_imagem.dart';
 
 class ProfileSignedWidget extends StatefulWidget {
   final ProfileState state;
+  final ProfileBloc bloc;
 
-  const ProfileSignedWidget({Key key, this.state}) : super(key: key);
+  const ProfileSignedWidget({Key key, this.state, @required this.bloc})
+      : super(key: key);
 
   @override
   _ProfileSignedWidgetState createState() => _ProfileSignedWidgetState();
@@ -34,14 +36,14 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var bloc = BlocProvider.of<ProfileBloc>(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         tooltip: "Editar Perfil",
         mini: true,
         onPressed: widget.state is ProfileEditingName
-            ? () => bloc.dispatch(ProfileUpdateName(name: _nameController.text))
-            : () => bloc.dispatch(ProfileUpdatingName(editing: true)),
+            ? () => widget.bloc
+                .dispatch(ProfileUpdateName(name: _nameController.text))
+            : () => widget.bloc.dispatch(ProfileUpdatingName(editing: true)),
         child: widget.state is ProfileEditingName
             ? Icon(Icons.done, color: Colors.black)
             : Icon(Icons.edit, color: Colors.black),
@@ -74,7 +76,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                                 maxHeight: 512,
                               );
                               if (croppedFile == null) return;
-                              bloc.dispatch(
+                              widget.bloc.dispatch(
                                   ProfileUpdatePhoto(path: croppedFile.path));
                             }
                           : null,
@@ -107,7 +109,7 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                     ),
                     style: TextStyle(color: Colors.black, fontSize: 24.0),
                     onSubmitted: (name) {
-                      bloc.dispatch(
+                      widget.bloc.dispatch(
                           ProfileUpdateName(name: _nameController.text));
                     },
                   ),

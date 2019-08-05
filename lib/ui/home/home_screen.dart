@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (c) => BlocProvider(
-                          bloc:
+                          builder: (_) =>
                               injector.get<PublicationBloc>("PublicationBloc"),
                           child: CreatePublicationScreen(),
                         )));
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
           LinksPage(),
           OBSPage(),
           BlocProvider(
-            bloc: injector.get<ProfileBloc>("ProfileBloc"),
+            builder: (_) => injector.get<ProfileBloc>("ProfileBloc"),
             child: ProfilePage(),
           )
         ],
@@ -112,7 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (c) => BlocProvider(
-                      bloc: injector.get<SettingsBloc>("SettingsBloc"),
+                      builder: (_) =>
+                          injector.get<SettingsBloc>("SettingsBloc"),
                       child: SettingsScreen(),
                     )));
           },

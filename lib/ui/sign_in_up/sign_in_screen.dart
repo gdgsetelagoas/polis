@@ -41,8 +41,7 @@ class _SignInScreenState extends State<SignInScreen> {
           if (state is SignRegister) {
             Navigator.of(context)
                 .push(MaterialPageRoute(
-                    builder: (c) =>
-                        BlocProvider(bloc: bloc, child: SignUpScreen())))
+                    builder: (c) => BlocProvider(child: SignUpScreen())))
                 .then((user) {
               if (user != null) Navigator.of(context).pop(user);
             });
@@ -56,7 +55,7 @@ class _SignInScreenState extends State<SignInScreen> {
             Navigator.of(context).pop(state.user);
           }
         },
-        child: BlocBuilder<SignEvent, SignState>(
+        child: BlocBuilder<SignBloc, SignState>(
           bloc: bloc,
           builder: (cont, state) {
             return AppLoading(
