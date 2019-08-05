@@ -32,13 +32,18 @@ class SignBloc extends Bloc<SignEvent, SignState> {
   }
 
   Future<SignState> _signInGoogle(SignLoginWithGooglePressed event) async {
-    await googleSignIn.signIn();
-    var currentUser = googleSignIn.currentUser;
-    var response = await accountDataSource.signInWithGoogle(currentUser);
-    if (response.isSuccess)
-      return SignLoginSuccessful(response.data);
-    else
-      return SignErrors(response.errors);
+    try {
+      var google = await googleSignIn.signIn().then((v) => print(v));
+      var currentUser = googleSignIn.currentUser;
+      var response = await accountDataSource.signInWithGoogle(currentUser);
+      if (response.isSuccess)
+        return SignLoginSuccessful(response.data);
+      else
+        return SignErrors(response.errors);
+    } catch (er, stack) {
+      print("$er\n$stack");
+      return SignErrors([er.toString()]);
+    }
   }
 
   Future<SignState> _signInEmailPass(SignLoginButtonPressed event) async {
