@@ -12,7 +12,6 @@ import 'package:res_publica/model/publication_entity.dart';
 import 'package:res_publica/model/react_entity.dart';
 import 'package:res_publica/model/reply_entity.dart';
 import 'package:res_publica/model/request_response.dart';
-import 'package:res_publica/model/user_entity.dart';
 
 class FirebasePublicationDataSource extends PublicationDataSource {
   final Firestore firestore;
@@ -144,9 +143,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
   Future<RequestResponse<PublicationEntity>> publish(
       PublicationEntity publication) async {
     var user = await accountDataSource.currentUser;
-    if (user == null)
-      return RequestResponse.fail(
-          403.toString(), ["Você precisa de está logado para publicar."]);
+    if (user == null) return RequestResponse.authFail(action: "publicar");
     try {
       var uploadedFiles = await _uploadFile(publication.resources);
       var doc = await _publicationCollection.add((publication
@@ -197,8 +194,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
       ReactEntity react) async {
     var user = await accountDataSource.currentUser;
     if (user == null)
-      return RequestResponse.fail(403.toString(),
-          ["Você precisa de está logado para reagir a uma publicação."]);
+      return RequestResponse.authFail(action: "reagir a uma publicação");
     try {
       var doc = await _reactCollection.add((react
             ..userId = user.userId
@@ -217,8 +213,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
   Future<RequestResponse<ReactEntity>> reactInReply(ReactEntity react) async {
     var user = await accountDataSource.currentUser;
     if (user == null)
-      return RequestResponse.fail(403.toString(),
-          ["Você precisa de está logado para reagir a um comentário."]);
+      return RequestResponse.authFail(action: "reagir a um comentário");
     try {
       var doc = await _reactCollection.add((react
             ..userId = user.userId
@@ -238,8 +233,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
       ReplyEntity reply) async {
     var user = await accountDataSource.currentUser;
     if (user == null)
-      return RequestResponse.fail(403.toString(),
-          ["Você precisa de está logado para deletar um comentário."]);
+      return RequestResponse.authFail(action: "deletar um comentário");
     try {
       await _replyCollection.document(reply.replyId).delete();
       return RequestResponse.success(
@@ -254,8 +248,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
       ReplyEntity reply) async {
     var user = await accountDataSource.currentUser;
     if (user == null)
-      return RequestResponse.fail(403.toString(),
-          ["Você precisa de está logado para publicar um comentário."]);
+      return RequestResponse.authFail(action: "publicar um comentário");
     try {
       var doc = await _replyCollection.add((reply
             ..userId = user.userId
@@ -276,18 +269,17 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     try {
       var user = await accountDataSource.currentUser;
       if (user == null)
-        return RequestResponse.fail(403.toString(),
-            ["Você precisa de está logado para remover uma reação."]);
+        return RequestResponse.authFail(action: "remover uma reação");
       var docs = await _reactCollection
           .where("user_id", isEqualTo: userId)
           .where("publication_id", isEqualTo: publicationId)
-          .limit(1)
           .getDocuments();
       if (docs.documents.isEmpty)
         return RequestResponse.fail("404",
             ["Não possui nenhuma reação registrada para essa publicação."]);
-      docs.documents
-          .forEach((doc) => _reactCollection.document(doc.documentID).delete());
+      for (var doc in docs.documents) {
+        await doc.reference.delete();
+      }
       return RequestResponse.success(
           ReactEntity.fromJson(docs.documents.first?.data));
     } catch (e) {
@@ -301,8 +293,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     try {
       var user = await accountDataSource.currentUser;
       if (user == null)
-        return RequestResponse.fail(403.toString(),
-            ["Você precisa de está logado para remover uma reação."]);
+        return RequestResponse.authFail(action: "remover uma reação");
       var docs = await _reactCollection
           .where("user_id", isEqualTo: userId)
           .where("publication_id", isEqualTo: reactId)
@@ -324,9 +315,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
   Future<RequestResponse<PublicationEntity>> updatePublication(
       PublicationEntity publication) async {
     var user = await accountDataSource.currentUser;
-    if (user == null)
-      return RequestResponse.fail(
-          403.toString(), ["Você precisa de está logado para publicar."]);
+    if (user == null) return RequestResponse.authFail(action: "publicar");
     try {
       await _publicationCollection.document().setData(
           (publication..updatedAt = DateTime.now()).toJson(),
@@ -343,8 +332,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     try {
       var user = await accountDataSource.currentUser;
       if (user == null)
-        return RequestResponse.fail(403.toString(),
-            ["Você precisa de está logado para atualizar um comentario."]);
+        return RequestResponse.authFail(action: "atualizar um comentario");
       await _replyCollection.document(reply.replyId).setData(
           (reply..updatedAt = DateTime.now().toIso8601String()).toJson(),
           merge: true);
@@ -360,14 +348,51 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     try {
       var user = await accountDataSource.currentUser;
       if (user == null)
-        return RequestResponse.fail(403.toString(),
-            ["Você precisa de está logado para seguir uma publicação."]);
+        return RequestResponse.authFail(action: "seguir uma publicação");
       var doc = await _followCollection
           .add((follow..createdAt = DateTime.now().toIso8601String()).toJson());
       await doc.setData({"follow_id": doc.documentID}, merge: true);
       return RequestResponse.success(follow..followId = doc.documentID);
     } catch (e) {
       return errorFirebase<PublicationEntity>(e, 23);
+    }
+  }
+
+  @override
+  Future<RequestResponse<ReactEntity>> hasReactInThisPublication(
+      PublicationEntity publication) async {
+    try {
+      var user = await accountDataSource.currentUser;
+      var react = await _reactCollection
+          .where("publication_id", isEqualTo: publication.publicationId)
+          .where("user_id", isEqualTo: user.userId)
+          .limit(1)
+          .getDocuments();
+      if (react.documents.isNotEmpty)
+        return RequestResponse.success(
+            ReactEntity.fromJson(react.documents.first.data));
+      return RequestResponse.notFound(resource: "reação");
+    } catch (err) {
+      return errorFirebase<ReactEntity>(err, 23);
+    }
+  }
+
+  @override
+  Future<RequestResponse<ReactEntity>> hasReactInThisReply(
+      ReplyEntity reply) async {
+    try {
+      var user = await accountDataSource.currentUser;
+      var react = await _reactCollection
+          .where("reply_id", isEqualTo: reply.replyId)
+          .where("user_id", isEqualTo: user.userId)
+          .limit(1)
+          .getDocuments();
+      if (react.documents.isNotEmpty)
+        return RequestResponse.success(
+            ReactEntity.fromJson(react.documents.first.data));
+      return RequestResponse.notFound(resource: "reação");
+    } catch (err) {
+      return errorFirebase<ReactEntity>(err, 23);
     }
   }
 }
