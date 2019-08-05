@@ -24,6 +24,9 @@ abstract class PublicationDataSource {
   Future<RequestResponse<ReactEntity>> unReactInPublication(
       String publicationId, String userId);
 
+  Future<RequestResponse<ReactEntity>> hasReactInThisPublication(
+      PublicationEntity publication);
+
   //-------Reply to Publication-------
   Future<RequestResponse<ReplyEntity>> replyToPublication(ReplyEntity reply);
 
@@ -38,6 +41,9 @@ abstract class PublicationDataSource {
 
   Future<RequestResponse<ReactEntity>> unReactInReply(
       String reactId, String userId);
+
+  Future<RequestResponse<ReactEntity>> hasReactInThisReply(
+      ReplyEntity reply);
 
   //-------Feed-------
   Future<RequestResponse<List<PublicationEntity>>> feed({
