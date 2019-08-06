@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:res_publica/model/follow_entity.dart';
 import 'package:res_publica/model/publication_entity.dart';
@@ -14,7 +15,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class FeedItemTile extends StatefulWidget {
   final PublicationEntity publication;
   final UserEntity user;
-  final FeedBloc bloc;
+  final FeedTileBloc bloc;
 
   const FeedItemTile(
       {Key key,
@@ -30,17 +31,13 @@ class FeedItemTile extends StatefulWidget {
 class _FeedItemTileState extends State<FeedItemTile> {
   UserEntity _user;
   GlobalKey _reactButtonKey = GlobalKey();
+  ReactEntity _userReact;
 
   @override
   void initState() {
-    widget.bloc.getUserData(widget.publication.userId).then((user) {
-      _user = user ??
-          UserEntity(
-              name: "Desconhecido",
-              photo:
-                  "https://www.publicdomainpictures.net/pictures/280000/nahled/question-mark-1544553868vD2.jpg");
-      if (mounted) setState(() {});
-    });
+    widget.bloc.dispatch(FeedLoadUserData(userId: widget.publication.userId));
+    widget.bloc.dispatch(
+        FeedLoadReactForPublicationStatus(publication: widget.publication));
     super.initState();
   }
 
@@ -54,74 +51,84 @@ class _FeedItemTileState extends State<FeedItemTile> {
           Padding(
             padding: const EdgeInsets.only(
                 top: 16.0, bottom: 8.0, left: 8.0, right: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: AppCircularImage(
-                    _user?.photo ?? "",
-                    size: 48.0,
-                    fit: BoxFit.cover,
-                    borderSide: BorderSide(
-                        color: Theme.of(context).accentColor, width: 2.5),
-                    shadows: [
-                      BoxShadow(
-                          color: Colors.black38,
-                          offset: Offset(0, 0.5),
-                          blurRadius: 2.5)
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        _user?.name ?? "🔌 Carregando..",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18.0),
-                        maxLines: 1,
+            child: BlocBuilder(
+              bloc: widget.bloc,
+              condition: (oldState, newState) => newState is FeedUserDataLoaded,
+              builder: (context, cardState) {
+                if (cardState is FeedUserDataLoaded)
+                  _user = cardState.user;
+                else
+                  _user = null;
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: AppCircularImage(
+                        _user?.photo ?? "",
+                        size: 48.0,
+                        fit: BoxFit.cover,
+                        borderSide: BorderSide(
+                            color: Theme.of(context).accentColor, width: 2.5),
+                        shadows: [
+                          BoxShadow(
+                              color: Colors.black38,
+                              offset: Offset(0, 0.5),
+                              blurRadius: 2.5)
+                        ],
                       ),
-                      Text(
-                          "  ${timeago.format(widget.publication.createdAt, locale: "pt_BR")}"),
-                    ],
-                  ),
-                ),
-                PopupMenuButton<String>(
-                  itemBuilder: (c) {
-                    if (widget.user != null &&
-                        widget.user.userId == widget.publication.userId)
-                      return [
-                        PopupMenuItem<String>(
-                          child: Text("Denunciar..."),
-                          value: "denunciar",
-                        ),
-                        PopupMenuItem<String>(
-                          child: Text("Editar"),
-                          value: "editar",
-                        ),
-                        PopupMenuItem<String>(
-                          child: Text("Excluir"),
-                          value: "excluir",
-                        ),
-                      ];
-                    return [
-                      PopupMenuItem<String>(
-                        child: Text("Denunciar..."),
-                        value: "denunciar",
-                      )
-                    ];
-                  },
-                  tooltip: "Mais Opções",
-                  onSelected: (item) {
-                    widget.bloc
-                        .dispatch(FeedButtonMenuItemPressed(option: item));
-                  },
-                ),
-              ],
+                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            _user?.name ?? "🔌 Carregando..",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18.0),
+                            maxLines: 1,
+                          ),
+                          Text(
+                              "  ${timeago.format(widget.publication.createdAt, locale: "pt_BR")}"),
+                        ],
+                      ),
+                    ),
+                    PopupMenuButton<String>(
+                      itemBuilder: (c) {
+                        if (widget.user != null &&
+                            widget.user.userId == widget.publication.userId)
+                          return [
+                            PopupMenuItem<String>(
+                              child: Text("Denunciar..."),
+                              value: "denunciar",
+                            ),
+                            PopupMenuItem<String>(
+                              child: Text("Editar"),
+                              value: "editar",
+                            ),
+                            PopupMenuItem<String>(
+                              child: Text("Excluir"),
+                              value: "excluir",
+                            ),
+                          ];
+                        return [
+                          PopupMenuItem<String>(
+                            child: Text("Denunciar..."),
+                            value: "denunciar",
+                          )
+                        ];
+                      },
+                      tooltip: "Mais Opções",
+                      onSelected: (item) {
+                        widget.bloc
+                            .dispatch(FeedButtonMenuItemPressed(option: item));
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           Padding(
@@ -174,55 +181,89 @@ class _FeedItemTileState extends State<FeedItemTile> {
                 }),
           ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Expanded(
-                key: _reactButtonKey,
-                child: InkWell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Center(
-                      child: Text(
-                        "${widget.publication.numReacts} Reaç${widget.publication.numReacts > 1 ? "ôes" : "ão"}",
-                        textAlign: TextAlign.center,
+              BlocBuilder(
+                bloc: widget.bloc,
+                condition: (oldState, newState) {
+                  if (newState is FeedProcessingReactInPublication ||
+                      newState is FeedReactInPublicationsFail) return true;
+
+                  if (newState is FeedReactInPublicationsSuccess) {
+                    _userReact = newState.react;
+                    return true;
+                  }
+                  return false;
+                },
+                builder: (context, state) {
+                  return Expanded(
+                    key: _reactButtonKey,
+                    child: InkWell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(
+                          child: Text(
+                            "${widget.publication.numReacts} Reaç${widget.publication.numReacts > 1 ? "ões" : "ão"}",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight:
+                                    (state is FeedReactInPublicationsSuccess) &&
+                                            _userReact != null
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                color:
+                                    state is FeedProcessingReactInPublication &&
+                                            state.processing
+                                        ? Colors.black12
+                                        : Colors.black),
+                          ),
+                        ),
                       ),
+                      onLongPress: state is FeedProcessingReactInPublication &&
+                              state.processing
+                          ? null
+                          : () async {
+                              if (state is FeedReactInPublicationsSuccess &&
+                                  _userReact == null) return;
+                              var react = await showDialog<ReactEntity>(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (con) {
+                                    RenderBox renderReactButton =
+                                        _reactButtonKey.currentContext
+                                            .findRenderObject();
+                                    return FeedReactSelect(
+                                        offset: renderReactButton
+                                            .localToGlobal(Offset.zero));
+                                  });
+                              if (react != null)
+                                widget.bloc.dispatch(
+                                    FeedButtonReactPublicationPressed(
+                                        react: react
+                                          ..publicationId =
+                                              widget.publication.publicationId
+                                          ..createdAt = DateTime.now()
+                                              .toIso8601String()));
+                            },
+                      onTap: state is FeedProcessingReactInPublication &&
+                              state.processing
+                          ? null
+                          : () {
+                              widget.bloc.dispatch(
+                                  FeedButtonReactPublicationPressed(
+                                      react: _userReact == null
+                                          ? ReactEntity(
+                                              publicationId: widget
+                                                  .publication.publicationId,
+                                              type: ReactType.LIKE,
+                                              createdAt: DateTime.now()
+                                                  .toIso8601String())
+                                          : _userReact));
+                            },
                     ),
-                  ),
-                  onLongPress: widget.user == null
-                      ? _loginDialog
-                      : () async {
-                          var react = await showDialog<ReactEntity>(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (con) {
-                                RenderBox renderReactButton = _reactButtonKey
-                                    .currentContext
-                                    .findRenderObject();
-                                return FeedReactSelect(
-                                    offset: renderReactButton
-                                        .localToGlobal(Offset.zero));
-                              });
-                          if (react != null)
-                            widget.bloc.dispatch(
-                                FeedButtonReactPublicationPressed(
-                                    react: react
-                                      ..publicationId =
-                                          widget.publication.publicationId
-                                      ..createdAt =
-                                          DateTime.now().toIso8601String()));
-                        },
-                  onTap: widget.user == null
-                      ? _loginDialog
-                      : () {
-                          widget.bloc.dispatch(
-                              FeedButtonReactPublicationPressed(
-                                  react: ReactEntity(
-                                      publicationId:
-                                          widget.publication.publicationId,
-                                      type: ReactType.LIKE,
-                                      createdAt:
-                                          DateTime.now().toIso8601String())));
-                        },
-                ),
+                  );
+                },
               ),
               Expanded(
                 child: InkWell(

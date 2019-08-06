@@ -16,7 +16,7 @@ class ViewPublicationScreen extends StatefulWidget {
   final PublicationEntity publication;
   final int sourceIndex;
   final VideoPlayerController videoPlayerController;
-  final FeedBloc bloc;
+  final FeedTileBloc bloc;
   final bool reply;
   final UserEntity user;
 
@@ -45,10 +45,6 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
 
   @override
   void initState() {
-    widget.bloc.getUserData(widget.publication.userId).then((user) {
-      _user = user ?? UserEntity(name: "Desconhecido");
-      setState(() {});
-    });
     _pageController = PageController(initialPage: widget.sourceIndex ?? 0);
     super.initState();
   }

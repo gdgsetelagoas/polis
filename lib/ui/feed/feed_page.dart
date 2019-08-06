@@ -33,18 +33,22 @@ class _FeedPageState extends State<FeedPage> {
         children: <Widget>[
           BlocBuilder(
             bloc: _bloc,
-            builder: (c, s) {
-              if (s is FeedList)
+            builder: (_, state) {
+              if (state is FeedList)
                 return RefreshIndicator(
                   onRefresh: () async {
                     _bloc.dispatch(FeedRefresh(widget.feedContext));
                   },
                   child: ListView.builder(
-                      itemCount: s.publications.length,
+                      itemCount: state.publications.length,
                       controller: _scrollController,
                       itemBuilder: (context, index) => FeedItemTile(
-                            publication: s.publications[index],
-                            bloc: _bloc,
+                            publication: state.publications[index],
+                            bloc: FeedTileBloc(
+                                accountDataSource: _bloc.accountDataSource,
+                                publicationDataSource:
+                                    _bloc.publicationDataSource),
+                            user: state.currentUser,
                           )),
                 );
               return Center();

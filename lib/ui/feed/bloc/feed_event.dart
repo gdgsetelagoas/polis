@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:res_publica/model/follow_entity.dart';
+import 'package:res_publica/model/publication_entity.dart';
 import 'package:res_publica/model/react_entity.dart';
 import 'package:res_publica/model/reply_entity.dart';
 
@@ -105,4 +106,16 @@ class FeedButtonMenuItemPressed extends FeedEvent {
   String toString() {
     return 'FeedButtonMenuItemPressed{option: $option}';
   }
+}
+
+class FeedLoadUserData extends FeedEvent {
+  final String userId;
+
+  FeedLoadUserData({this.userId}) : super([userId]);
+}
+
+class FeedLoadReactForPublicationStatus extends FeedEvent {
+  final PublicationEntity publication;
+
+  FeedLoadReactForPublicationStatus({this.publication}) : super([publication]);
 }
