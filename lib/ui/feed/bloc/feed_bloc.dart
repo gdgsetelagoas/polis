@@ -33,17 +33,13 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   void onEvent(FeedEvent event) async {
     var user = await accountDataSource.currentUser;
     if (user == null) return;
-    if (event is FeedButtonReactPublicationPressed) {
-      _processingPublisher.sink.add(true);
-      await publicationDataSource
-          .reactInPublication(event.react..userId = user.userId);
-      _processingPublisher.sink.add(false);
-    } else if (event is FeedButtonFollowPublicationPressed) {
+    if (event is FeedButtonFollowPublicationPressed) {
       _processingPublisher.sink.add(true);
       await publicationDataSource
           .followPublication(event.follow..userId = user.userId);
       _processingPublisher.sink.add(false);
-    } else if (event is FeedButtonRepliesPublicationPressed) {
+    }
+    if (event is FeedButtonRepliesPublicationPressed) {
       _processingPublisher.sink.add(true);
       await publicationDataSource
           .replyToPublication(event.reply..userId = user.userId);
@@ -61,8 +57,10 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
       var user = await accountDataSource.currentUser;
       var response;
       if (event.feedContext == FeedContext.FOLLOWED)
-        response = await publicationDataSource.publicationsFollowed(user?.userId,
-            page: _page, itemPerPage: _itemsPerPage);
+        response = await publicationDataSource.publicationsFollowed(
+            user?.userId,
+            page: _page,
+            itemPerPage: _itemsPerPage);
       else if (event.feedContext == FeedContext.MINE)
         response = await publicationDataSource.myPublications(user?.userId,
             page: _page, itemPerPage: _itemsPerPage);
@@ -74,7 +72,7 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
         if (response.data.isEmpty)
           yield FeedEmptyList(feedContext: event.feedContext);
         else
-          yield FeedList(response.data);
+          yield FeedList(response.data, currentUser: user);
       }
     }
     this._lastEvent = event;
