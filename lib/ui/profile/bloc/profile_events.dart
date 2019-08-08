@@ -9,7 +9,7 @@ abstract class ProfileEvent extends Equatable {
 class ProfileUpdateName extends ProfileEvent {
   final String name;
 
-  ProfileUpdateName({@required this.name});
+  ProfileUpdateName({@required this.name}) : super([name]);
 
   @override
   String toString() {
@@ -20,7 +20,7 @@ class ProfileUpdateName extends ProfileEvent {
 class ProfileUpdatingName extends ProfileEvent {
   final bool editing;
 
-  ProfileUpdatingName({@required this.editing});
+  ProfileUpdatingName({@required this.editing}) : super([editing]);
 
   @override
   String toString() {
@@ -31,7 +31,7 @@ class ProfileUpdatingName extends ProfileEvent {
 class ProfileUpdatePhoto extends ProfileEvent {
   final String path;
 
-  ProfileUpdatePhoto({@required this.path});
+  ProfileUpdatePhoto({@required this.path}) : super([path]);
 
   @override
   String toString() {
@@ -40,7 +40,6 @@ class ProfileUpdatePhoto extends ProfileEvent {
 }
 
 class ProfileUserAuthenticatedFail extends ProfileEvent {
-
   ProfileUserAuthenticatedFail();
 
   @override
@@ -48,10 +47,11 @@ class ProfileUserAuthenticatedFail extends ProfileEvent {
     return 'ProfileUserAuthenticatedFail';
   }
 }
+
 class ProfileUserAuthenticated extends ProfileEvent {
   final UserEntity user;
 
-  ProfileUserAuthenticated({@required this.user});
+  ProfileUserAuthenticated({@required this.user}) : super([user]);
 
   @override
   String toString() {
@@ -60,7 +60,6 @@ class ProfileUserAuthenticated extends ProfileEvent {
 }
 
 class ProfileUserAuthenticating extends ProfileEvent {
-
   ProfileUserAuthenticating();
 
   @override
