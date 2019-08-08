@@ -22,15 +22,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   @override
   Stream<ProfileState> mapEventToState(ProfileEvent event) async* {
-    yield ProfileLoading();
-
     if (event is ProfileUserAuthenticating) {
+      yield ProfileLoading(true);
       var user = await _accountDataSource.currentUser;
       if (user == null)
         _state = ProfileNotSigned();
       else
         _state = ProfileSigned(user: user);
       yield _state;
+      yield ProfileLoading(false);
     }
 
     if (event is ProfileUserAuthenticated) {
