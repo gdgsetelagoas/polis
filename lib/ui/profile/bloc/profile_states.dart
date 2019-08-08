@@ -12,8 +12,9 @@ class ProfileEditingName extends ProfileSigned {
 }
 
 class ProfileLoading extends ProfileState {
-  @override
-  String toString() => "ProfileLoading";
+  final bool loading;
+
+  ProfileLoading(this.loading) : super([loading]);
 }
 
 class ProfileNotSigned extends ProfileState {
@@ -24,7 +25,7 @@ class ProfileNotSigned extends ProfileState {
 class ProfileSigned extends ProfileState {
   final UserEntity user;
 
-  ProfileSigned({@required this.user});
+  ProfileSigned({@required this.user}) : super([user]);
 
   @override
   String toString() => "ProfileSigned";
@@ -33,7 +34,7 @@ class ProfileSigned extends ProfileState {
 class ProfileErrors extends ProfileState {
   final List<String> errors;
 
-  ProfileErrors({@required this.errors});
+  ProfileErrors({@required this.errors}) : super([errors]);
 
   @override
   String toString() {
