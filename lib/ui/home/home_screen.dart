@@ -48,8 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: _actions[_actualPage],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        unselectedItemColor: Colors.black,
-        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Theme.of(context).primaryColor,
+        selectedItemColor: Colors.black,
         currentIndex: _actualPage,
         items: [
           BottomNavigationBarItem(
