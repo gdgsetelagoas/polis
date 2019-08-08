@@ -32,18 +32,20 @@ class _ProfilePageState extends State<ProfilePage> {
       children: <Widget>[
         BlocBuilder<ProfileBloc, ProfileState>(
           bloc: bloc,
+          condition: (oldState, newState) {
+            if (newState is ProfileNotSigned || newState is ProfileSigned)
+              return true;
+            return false;
+          },
           builder: (con, state) {
             if (state is ProfileNotSigned)
-              _lastState = BlocProvider(
-                builder: (_) => bloc,
-                child: ProfileNoSignedWidget(),
-              );
-            if (state is ProfileEditingName || state is ProfileSigned)
-              _lastState = ProfileSignedWidget(
-                state: state,
+              return ProfileNoSignedWidget(bloc: bloc);
+            if (state is ProfileSigned)
+              return ProfileSignedWidget(
                 bloc: bloc,
+                user: state.user,
               );
-            return _lastState;
+            return SizedBox();
           },
         ),
         Positioned(
@@ -53,8 +55,11 @@ class _ProfilePageState extends State<ProfilePage> {
             child: BlocBuilder<ProfileBloc, ProfileState>(
               bloc: bloc,
               builder: (context, state) {
-                if (state is ProfileLoading) return CircularProgressIndicator();
-                return Container();
+                if (state is ProfileLoading && state.loading)
+                  return CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                  );
+                return SizedBox();
               },
             ),
           ),

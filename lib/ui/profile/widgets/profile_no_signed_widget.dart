@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
 import 'package:res_publica/ui/profile/bloc/profile_events.dart';
 
 class ProfileNoSignedWidget extends StatelessWidget {
+  final ProfileBloc bloc;
+
+  const ProfileNoSignedWidget({Key key, this.bloc}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    var bloc = BlocProvider.of<ProfileBloc>(context);
     return Container(
       padding: EdgeInsets.all(24.0),
       child: Center(
