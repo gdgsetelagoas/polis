@@ -58,5 +58,21 @@ class FeedTileBloc extends Bloc<FeedEvent, FeedState> {
       var user = await accountDataSource.getUserById(event.userId);
       yield FeedUserDataLoaded(user);
     }
+
+    if (event is FeedLoadReplies) {
+      var repliesResponse = await publicationDataSource.repliesFromAPublication(
+          event.publication.publicationId,
+          itemsPerPage: event.itemsPerPage,
+          page: event.page);
+      if (repliesResponse.isSuccess) {
+        yield FeedRepliesLoaded(
+            replies: repliesResponse.data,
+            currentPage: event.page,
+            nextPage: repliesResponse.data.length == event.itemsPerPage
+                ? event.page + 1
+                : null,
+            itemsPerPage: event.itemsPerPage);
+      }
+    }
   }
 }
