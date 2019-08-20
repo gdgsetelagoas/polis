@@ -426,6 +426,7 @@ class FirebasePublicationDataSource extends PublicationDataSource {
         .limit(itemsPerPage);
     _olderReplyQueryMap[publicationId] = baseQuery;
     var docs = await baseQuery.getDocuments();
+    if (docs.documents.isEmpty) return [];
     _nextReplyQueryMap[publicationId] =
         baseQuery.startAfterDocument(docs.documents.last);
     return docs.documents
@@ -439,7 +440,9 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     var baseQuery = _nextReplyQueryMap[publicationId];
     _olderReplyQueryMap[publicationId] = _nextReplyQueryMap[publicationId];
     var docs = await baseQuery.getDocuments();
-    _nextReplyQueryMap[publicationId] = baseQuery.startAfterDocument(docs.documents.last);
+    if (docs.documents.isEmpty) return [];
+    _nextReplyQueryMap[publicationId] =
+        baseQuery.startAfterDocument(docs.documents.last);
     return docs.documents
         .map((doc) => ReplyEntity.fromJson(doc.data))
         .toList()
