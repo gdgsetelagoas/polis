@@ -403,9 +403,6 @@ class FirebasePublicationDataSource extends PublicationDataSource {
       String publicationId,
       {int page,
       int itemsPerPage}) async {
-    _replyCollection
-        .where('publication_id', isEqualTo: publicationId)
-        .limit(itemsPerPage);
     if (page < 0)
       return RequestResponse.fail(404.toString(), ["Pagina inválida"]);
     try {
@@ -423,11 +420,12 @@ class FirebasePublicationDataSource extends PublicationDataSource {
 
   Future<List<ReplyEntity>> _firstReplyQuery(
       int itemsPerPage, String publicationId) async {
-    var baseQuery = _publicationCollection
+    var baseQuery = _replyCollection
         .orderBy('created_at', descending: true)
+        .where('publication_id', isEqualTo: publicationId)
         .limit(itemsPerPage);
     _olderReplyQueryMap[publicationId] = baseQuery;
-    var docs = await _olderFeedQuery.getDocuments();
+    var docs = await baseQuery.getDocuments();
     _nextReplyQueryMap[publicationId] =
         baseQuery.startAfterDocument(docs.documents.last);
     return docs.documents
@@ -438,12 +436,10 @@ class FirebasePublicationDataSource extends PublicationDataSource {
 
   Future<List<ReplyEntity>> _nextReplyQuery(
       int itemsPerPage, String publicationId) async {
-    var baseQuery = _publicationCollection
-        .orderBy('created_at', descending: true)
-        .limit(itemsPerPage);
+    var baseQuery = _nextReplyQueryMap[publicationId];
     _olderReplyQueryMap[publicationId] = _nextReplyQueryMap[publicationId];
-    var docs = await _olderFeedQuery.getDocuments();
-    _nextFeedQuery = baseQuery.startAfterDocument(docs.documents.last);
+    var docs = await baseQuery.getDocuments();
+    _nextReplyQueryMap[publicationId] = baseQuery.startAfterDocument(docs.documents.last);
     return docs.documents
         .map((doc) => ReplyEntity.fromJson(doc.data))
         .toList()
