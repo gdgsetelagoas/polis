@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:res_publica/model/reply_entity.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ReplyWidget extends StatefulWidget {
   final ReplyEntity reply;
@@ -30,6 +31,7 @@ class _ReplyWidgetState extends State<ReplyWidget>
   @override
   void initState() {
     _controller = AnimationController(vsync: this);
+    // widget.bloc.dispatch(FeedLoadUserData(userId: widget.publication.userId));
     super.initState();
   }
 
@@ -98,7 +100,9 @@ class _ReplyWidgetState extends State<ReplyWidget>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Text("1 m"),
+                    Text(timeago.format(
+                        DateTime.tryParse(widget.reply.createdAt),
+                        locale: "pt_BR")),
                     Spacer(flex: 1),
                     Text("Reagir"),
                     Spacer(flex: 1),
