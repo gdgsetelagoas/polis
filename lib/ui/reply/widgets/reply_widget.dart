@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:res_publica/main.dart';
 import 'package:res_publica/model/reply_entity.dart';
+import 'package:res_publica/model/user_entity.dart';
+import 'package:res_publica/ui/reply/bloc/bloc.dart';
+import 'package:res_publica/ui/widgets/app_circular_imagem.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -24,20 +29,19 @@ class ReplyWidget extends StatefulWidget {
   _ReplyWidgetState createState() => _ReplyWidgetState();
 }
 
-class _ReplyWidgetState extends State<ReplyWidget>
-    with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+class _ReplyWidgetState extends State<ReplyWidget> {
+  UserEntity _user;
+  ReplyBloc _bloc;
 
   @override
   void initState() {
-    _controller = AnimationController(vsync: this);
-    // widget.bloc.dispatch(FeedLoadUserData(userId: widget.publication.userId));
+    _bloc = injector.get<ReplyBloc>("ReplyBloc");
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _bloc.dispose();
     super.dispose();
   }
 
@@ -48,15 +52,26 @@ class _ReplyWidgetState extends State<ReplyWidget>
         padding: widget.padding,
         margin: widget.margin,
       );
+    _bloc?.dispatch(ReplyLoadUserData(userId: widget.reply?.userId));
     return Container(
       padding: widget.padding,
       margin: widget.margin,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          CircleAvatar(
-            backgroundImage: NetworkImage(""),
-            backgroundColor: Theme.of(context).accentColor,
+          BlocBuilder(
+            bloc: _bloc,
+            condition: (oldState, newState) {
+              if (newState is ReplyUserDataLoaded) {
+                _user = newState.user;
+                return true;
+              }
+              return false;
+            },
+            builder: (context, state) => AppCircularImage(_user?.photo ?? "",
+                size: 46.0,
+                borderSide: BorderSide(
+                    color: Theme.of(context).accentColor, width: 2.0)),
           ),
           SizedBox(
             width: 8.0,
@@ -74,10 +89,20 @@ class _ReplyWidgetState extends State<ReplyWidget>
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        "Nome",
-                        style: TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.bold),
+                      BlocBuilder(
+                        bloc: _bloc,
+                        condition: (oldState, newState) {
+                          if (newState is ReplyUserDataLoaded) {
+                            _user = newState.user;
+                            return true;
+                          }
+                          return false;
+                        },
+                        builder: (context, state) => Text(
+                          _user?.name ?? "Carregando",
+                          style: TextStyle(
+                              fontSize: 16.0, fontWeight: FontWeight.bold),
+                        ),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 4.0),
