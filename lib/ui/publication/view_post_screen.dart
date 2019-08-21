@@ -71,13 +71,7 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
                       _user?.photo ?? "",
                       size: 48.0,
                       fit: BoxFit.cover,
-                      borderSide: BorderSide(color: Colors.black, width: 2.5),
-                      shadows: [
-                        BoxShadow(
-                            color: Colors.black38,
-                            offset: Offset(0, 0.5),
-                            blurRadius: 2.5)
-                      ],
+                      borderSide: BorderSide(color: Colors.black, width: 2),
                     )),
           ),
         ),
