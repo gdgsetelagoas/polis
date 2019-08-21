@@ -77,5 +77,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         }
       }
     }
+
+    if (event is ProfileUserAuthenticating) {
+      yield ProfileOpenSignInScreen();
+    }
   }
 }

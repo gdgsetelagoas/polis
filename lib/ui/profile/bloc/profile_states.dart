@@ -41,3 +41,5 @@ class ProfileErrors extends ProfileState {
     return 'ProfileErrors{errors: $errors}';
   }
 }
+
+class ProfileOpenSignInScreen extends ProfileState {}
