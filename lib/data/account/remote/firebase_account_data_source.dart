@@ -17,7 +17,7 @@ class FirebaseAccountDataSource implements AccountDataSource {
   final Firestore firestore;
   final FirebaseStorage firebaseStorage;
   UserEntity _user;
-  final Map<String, UserEntity> _users = {};
+  static final Map<String, UserEntity> _users = {};
 
   FirebaseAccountDataSource({
     @required this.firebaseAuth,
