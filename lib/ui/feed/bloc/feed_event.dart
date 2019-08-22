@@ -119,3 +119,16 @@ class FeedLoadReactForPublicationStatus extends FeedEvent {
 
   FeedLoadReactForPublicationStatus({this.publication}) : super([publication]);
 }
+
+class FeedLoadReplies extends FeedEvent {
+  final PublicationEntity publication;
+  final ReplyEntity reply;
+  final int itemsPerPage, page;
+
+  FeedLoadReplies({
+    @required this.publication,
+    this.reply,
+    this.itemsPerPage = 25,
+    this.page = 0,
+  }) : super([reply, publication, itemsPerPage, page]);
+}

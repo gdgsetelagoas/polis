@@ -10,6 +10,7 @@ import 'package:res_publica/data/publication/remote/firebase_publication_data_so
 import 'package:res_publica/ui/feed/bloc/feed_bloc.dart';
 import 'package:res_publica/ui/profile/bloc/profile_bloc.dart';
 import 'package:res_publica/ui/publication/bloc/publication_bloc.dart';
+import 'package:res_publica/ui/reply/bloc/reply_bloc.dart';
 import 'package:res_publica/ui/settings/bloc/settings_bloc.dart';
 import 'package:res_publica/ui/sign_in_up/bloc/sign_bloc.dart';
 
@@ -104,5 +105,13 @@ class Injector {
                 get<PublicationDataSource>("PublicationDataSource")),
         name: "FeedBloc",
         defaultMode: dioc.InjectMode.create);
+
+    _container.register<ReplyBloc>(
+        (c) => ReplyBloc(
+            accountDataSource: get<AccountDataSource>("AccountDataSource"),
+            publicationDataSource:
+                get<PublicationDataSource>("PublicationDataSource")),
+        defaultMode: dioc.InjectMode.create,
+        name: "ReplyBloc");
   }
 }

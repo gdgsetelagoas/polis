@@ -33,6 +33,8 @@ class FirebasePublicationDataSource extends PublicationDataSource {
 
   Query _nextFeedQuery;
   Query _olderFeedQuery;
+  Map<String, Query> _olderReplyQueryMap = {};
+  Map<String, Query> _nextReplyQueryMap = {};
 
   FirebasePublicationDataSource({
     @required this.firestore,
@@ -394,5 +396,56 @@ class FirebasePublicationDataSource extends PublicationDataSource {
     } catch (err) {
       return errorFirebase<ReactEntity>(err, 23);
     }
+  }
+
+  @override
+  Future<RequestResponse<List<ReplyEntity>>> repliesFromAPublication(
+      String publicationId,
+      {int page,
+      int itemsPerPage}) async {
+    if (page < 0)
+      return RequestResponse.fail(404.toString(), ["Pagina inválida"]);
+    try {
+      if (page == 0) {
+        return RequestResponse.success(
+            await _firstReplyQuery(itemsPerPage, publicationId));
+      } else {
+        return RequestResponse.success(
+            await _nextReplyQuery(itemsPerPage, publicationId));
+      }
+    } catch (e) {
+      return errorFirebase<List<ReplyEntity>>(e, 401);
+    }
+  }
+
+  Future<List<ReplyEntity>> _firstReplyQuery(
+      int itemsPerPage, String publicationId) async {
+    var baseQuery = _replyCollection
+        .orderBy('created_at', descending: true)
+        .where('publication_id', isEqualTo: publicationId)
+        .limit(itemsPerPage);
+    _olderReplyQueryMap[publicationId] = baseQuery;
+    var docs = await baseQuery.getDocuments();
+    if (docs.documents.isEmpty) return [];
+    _nextReplyQueryMap[publicationId] =
+        baseQuery.startAfterDocument(docs.documents.last);
+    return docs.documents
+        .map((doc) => ReplyEntity.fromJson(doc.data))
+        .toList()
+        .cast<ReplyEntity>();
+  }
+
+  Future<List<ReplyEntity>> _nextReplyQuery(
+      int itemsPerPage, String publicationId) async {
+    var baseQuery = _nextReplyQueryMap[publicationId];
+    _olderReplyQueryMap[publicationId] = _nextReplyQueryMap[publicationId];
+    var docs = await baseQuery.getDocuments();
+    if (docs.documents.isEmpty) return [];
+    _nextReplyQueryMap[publicationId] =
+        baseQuery.startAfterDocument(docs.documents.last);
+    return docs.documents
+        .map((doc) => ReplyEntity.fromJson(doc.data))
+        .toList()
+        .cast<ReplyEntity>();
   }
 }

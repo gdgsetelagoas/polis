@@ -16,12 +16,16 @@ class FeedItemTile extends StatefulWidget {
   final PublicationEntity publication;
   final UserEntity user;
   final FeedTileBloc bloc;
+  final bool hideHeader;
+  final bool bodyExpanded;
 
   const FeedItemTile(
       {Key key,
       @required this.publication,
       @required this.bloc,
-      @required this.user})
+      @required this.user,
+      this.hideHeader = false,
+      this.bodyExpanded = false})
       : super(key: key);
 
   @override
@@ -35,7 +39,8 @@ class _FeedItemTileState extends State<FeedItemTile> {
 
   @override
   void initState() {
-    widget.bloc.dispatch(FeedLoadUserData(userId: widget.publication.userId));
+    if (!widget.hideHeader)
+      widget.bloc.dispatch(FeedLoadUserData(userId: widget.publication.userId));
     widget.bloc.dispatch(
         FeedLoadReactForPublicationStatus(publication: widget.publication));
     super.initState();
@@ -59,75 +64,80 @@ class _FeedItemTileState extends State<FeedItemTile> {
                   _user = cardState.user;
                 else
                   _user = null;
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: AppCircularImage(
-                        _user?.photo ?? "",
-                        size: 48.0,
-                        fit: BoxFit.cover,
-                        borderSide: BorderSide(
-                            color: Theme.of(context).accentColor, width: 2.5),
-                        shadows: [
-                          BoxShadow(
-                              color: Colors.black38,
-                              offset: Offset(0, 0.5),
-                              blurRadius: 2.5)
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                return widget.hideHeader
+                    ? SizedBox()
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          Text(
-                            _user?.name ?? "🔌 Carregando..",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18.0),
-                            maxLines: 1,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: AppCircularImage(
+                              _user?.photo ?? "",
+                              size: 48.0,
+                              fit: BoxFit.cover,
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).accentColor,
+                                  width: 2.5),
+                              shadows: [
+                                BoxShadow(
+                                    color: Colors.black38,
+                                    offset: Offset(0, 0.5),
+                                    blurRadius: 2.5)
+                              ],
+                            ),
                           ),
-                          Text(
-                              "  ${timeago.format(widget.publication.createdAt, locale: "pt_BR")}"),
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  _user?.name ?? "🔌 Carregando..",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0),
+                                  maxLines: 1,
+                                ),
+                                Text(
+                                    "  ${timeago.format(widget.publication.createdAt, locale: "pt_BR")}"),
+                              ],
+                            ),
+                          ),
+                          PopupMenuButton<String>(
+                            itemBuilder: (c) {
+                              if (widget.user != null &&
+                                  widget.user.userId ==
+                                      widget.publication.userId)
+                                return [
+                                  PopupMenuItem<String>(
+                                    child: Text("Denunciar..."),
+                                    value: "denunciar",
+                                  ),
+                                  PopupMenuItem<String>(
+                                    child: Text("Editar"),
+                                    value: "editar",
+                                  ),
+                                  PopupMenuItem<String>(
+                                    child: Text("Excluir"),
+                                    value: "excluir",
+                                  ),
+                                ];
+                              return [
+                                PopupMenuItem<String>(
+                                  child: Text("Denunciar..."),
+                                  value: "denunciar",
+                                )
+                              ];
+                            },
+                            tooltip: "Mais Opções",
+                            onSelected: (item) {
+                              widget.bloc.dispatch(
+                                  FeedButtonMenuItemPressed(option: item));
+                            },
+                          ),
                         ],
-                      ),
-                    ),
-                    PopupMenuButton<String>(
-                      itemBuilder: (c) {
-                        if (widget.user != null &&
-                            widget.user.userId == widget.publication.userId)
-                          return [
-                            PopupMenuItem<String>(
-                              child: Text("Denunciar..."),
-                              value: "denunciar",
-                            ),
-                            PopupMenuItem<String>(
-                              child: Text("Editar"),
-                              value: "editar",
-                            ),
-                            PopupMenuItem<String>(
-                              child: Text("Excluir"),
-                              value: "excluir",
-                            ),
-                          ];
-                        return [
-                          PopupMenuItem<String>(
-                            child: Text("Denunciar..."),
-                            value: "denunciar",
-                          )
-                        ];
-                      },
-                      tooltip: "Mais Opções",
-                      onSelected: (item) {
-                        widget.bloc
-                            .dispatch(FeedButtonMenuItemPressed(option: item));
-                      },
-                    ),
-                  ],
-                );
+                      );
               },
             ),
           ),
@@ -135,7 +145,7 @@ class _FeedItemTileState extends State<FeedItemTile> {
             padding: const EdgeInsets.only(
                 top: 8.0, right: 16.0, left: 16.0, bottom: 8.0),
             child: MarkdownBody(
-              data: widget.publication.subtitle.length < 150
+              data: widget.publication.subtitle.length < 150 || widget.bodyExpanded
                   ? widget.publication.subtitle
                   : widget.publication.subtitle.substring(0, 139).trim() +
                       "... [ver mais](#vermais)",

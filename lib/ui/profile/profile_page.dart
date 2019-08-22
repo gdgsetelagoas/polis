@@ -15,14 +15,12 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Widget _lastState = Container();
   ProfileBloc bloc;
 
   @override
   void initState() {
     bloc = BlocProvider.of<ProfileBloc>(context);
-    bloc.dispatch(ProfileUserAuthenticating());
-    bloc.event.listen(_events);
+    bloc.state.listen(_states);
     super.initState();
   }
 
@@ -68,8 +66,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _events(ProfileEvent event) {
-    if (event is ProfileUserAuthenticating)
+  _states(ProfileState event) {
+    if (event is ProfileOpenSignInScreen)
       Navigator.of(context)
           .push(MaterialPageRoute(
               builder: (c) => BlocProvider(

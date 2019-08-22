@@ -36,14 +36,19 @@ abstract class PublicationDataSource {
   Future<RequestResponse<ReplyEntity>> removeReplyToPublication(
       ReplyEntity reply);
 
+  Future<RequestResponse<List<ReplyEntity>>> repliesFromAPublication(
+    String publicationId, {
+    @required int page,
+    @required int itemsPerPage,
+  });
+
   //-------React in Reply-------
   Future<RequestResponse<ReactEntity>> reactInReply(ReactEntity react);
 
   Future<RequestResponse<ReactEntity>> unReactInReply(
       String reactId, String userId);
 
-  Future<RequestResponse<ReactEntity>> hasReactInThisReply(
-      ReplyEntity reply);
+  Future<RequestResponse<ReactEntity>> hasReactInThisReply(ReplyEntity reply);
 
   //-------Feed-------
   Future<RequestResponse<List<PublicationEntity>>> feed({

@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:res_publica/model/publication_entity.dart';
 import 'package:res_publica/model/react_entity.dart';
+import 'package:res_publica/model/reply_entity.dart';
 import 'package:res_publica/model/user_entity.dart';
 import 'package:res_publica/ui/feed/bloc/feed_event.dart';
 
@@ -58,4 +59,16 @@ class FeedUserDataLoaded extends FeedState {
   final UserEntity user;
 
   FeedUserDataLoaded(this.user) : super([user]);
+}
+
+class FeedRepliesLoaded extends FeedState {
+  final List<ReplyEntity> replies;
+  final int currentPage, nextPage, itemsPerPage;
+
+  FeedRepliesLoaded(
+      {@required this.replies,
+      this.currentPage,
+      this.nextPage,
+      this.itemsPerPage})
+      : super([replies, currentPage, nextPage, itemsPerPage]);
 }

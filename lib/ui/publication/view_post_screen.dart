@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:res_publica/model/follow_entity.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:res_publica/model/publication_entity.dart';
-import 'package:res_publica/model/react_entity.dart';
 import 'package:res_publica/model/reply_entity.dart';
 import 'package:res_publica/model/user_entity.dart';
 import 'package:res_publica/ui/feed/bloc/bloc.dart';
-import 'package:res_publica/ui/feed/widgets/feed_item_player.dart';
-import 'package:res_publica/ui/feed/widgets/feed_react_select.dart';
+import 'package:res_publica/ui/feed/widgets/feed_item_tile.dart';
+import 'package:res_publica/ui/reply/widgets/reply_widget.dart';
 import 'package:res_publica/ui/widgets/app_circular_imagem.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:video_player/video_player.dart';
@@ -37,15 +35,16 @@ class ViewPublicationScreen extends StatefulWidget {
 
 class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
   UserEntity _user;
-  PageController _pageController;
   TextEditingController _replyController = TextEditingController();
   FocusNode _replyFocus = FocusNode();
-  GlobalKey _reactButtonKey = GlobalKey();
   GlobalKey _bottomFieldReply = GlobalKey();
+  FeedRepliesLoaded _repliesState;
 
   @override
   void initState() {
-    _pageController = PageController(initialPage: widget.sourceIndex ?? 0);
+    widget.bloc.dispatch(FeedLoadReplies(
+        publication: widget.publication, itemsPerPage: 25, page: 0));
+    widget.bloc.dispatch(FeedLoadUserData(userId: widget.publication.userId));
     super.initState();
   }
 
@@ -55,29 +54,44 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
       appBar: AppBar(
         leading: Center(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AppCircularImage(
-              _user?.photo ?? "",
-              size: 48.0,
-              fit: BoxFit.cover,
-              borderSide:
-                  BorderSide(color: Theme.of(context).accentColor, width: 2.5),
-              shadows: [
-                BoxShadow(
-                    color: Colors.black38,
-                    offset: Offset(0, 0.5),
-                    blurRadius: 2.5)
-              ],
+            padding: const EdgeInsets.only(
+              top: 8.0,
+              bottom: 4.0,
             ),
+            child: BlocBuilder(
+                bloc: widget.bloc,
+                condition: (oldState, newState) {
+                  if (newState is FeedUserDataLoaded) {
+                    _user = newState.user;
+                    return true;
+                  }
+                  return false;
+                },
+                builder: (context, state) => AppCircularImage(
+                      _user?.photo ?? "",
+                      size: 48.0,
+                      fit: BoxFit.cover,
+                      borderSide: BorderSide(color: Colors.black, width: 2),
+                    )),
           ),
         ),
         title: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                _user?.name ?? "🔌 Carregando..",
-                style: TextStyle(fontWeight: FontWeight.bold),
+              BlocBuilder(
+                bloc: widget.bloc,
+                condition: (oldState, newState) {
+                  if (newState is FeedUserDataLoaded) {
+                    _user = newState.user;
+                    return true;
+                  }
+                  return false;
+                },
+                builder: (context, state) => Text(
+                  _user?.name ?? "🔌 Carregando..",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
               Text(
                 "  ${timeago.format(widget.publication.createdAt, locale: "pt_BR")}",
@@ -110,7 +124,7 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
                 )
               ];
             },
-            tooltip: "Mais Opções",
+            tooltip: "Mais OpçformattedStringões",
             onSelected: (item) {
               widget.bloc.dispatch(FeedButtonMenuItemPressed(option: item));
             },
@@ -127,125 +141,86 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
                               as RenderBox)
                           ?.size
                           ?.height ??
-                      30.0),
-              child: ListView(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: MarkdownBody(
-                      data: widget.publication.subtitle,
-                      onTapLink: (link) {
-                        print(link);
-                      },
+                      75.0),
+              child: CustomScrollView(
+                slivers: <Widget>[
+                  SliverToBoxAdapter(
+                    child: FeedItemTile(
+                      bloc: widget.bloc,
+                      publication: widget.publication,
+                      user: widget.user,
+                      bodyExpanded: true,
+                      hideHeader: true,
                     ),
                   ),
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 250),
-                    height: widget.publication.resources.isEmpty
-                        ? 0.0
-                        : MediaQuery.of(context).size.width,
-                    child: PageView.builder(
-                        itemCount: widget.publication.resources.length,
-                        controller: _pageController,
-                        itemBuilder: (context, index) {
-                          var res = widget.publication.resources[index];
-                          if (res.type == PublicationResourceType.IMAGE)
-                            return Container(
-                              color: Colors.grey.shade300,
-                              child: Image.network(
-                                res.source,
-                                fit: BoxFit.cover,
-                              ),
+                  BlocBuilder(
+                    bloc: widget.bloc,
+                    condition: (oldState, newState) {
+                      if (newState is FeedRepliesLoaded) {
+                        _repliesState = newState;
+                        return true;
+                      }
+                      return false;
+                    },
+                    builder: (context, state) {
+                      if (_repliesState == null)
+                        return SliverList(
+                          delegate: SliverChildListDelegate.fixed([
+                            ReplyWidget.shimmer(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.00)),
+                            ReplyWidget.shimmer(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.00)),
+                            ReplyWidget.shimmer(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.00)),
+                            ReplyWidget.shimmer(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.00)),
+                            ReplyWidget.shimmer(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 16.00))
+                          ]),
+                        );
+                      if (_repliesState.replies.isNotEmpty)
+                        return SliverList(
+                          delegate:
+                              SliverChildBuilderDelegate((context, index) {
+                            return ReplyWidget(
+                              reply: _repliesState.replies[index],
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.00),
                             );
-                          return FeedItemPlayer(url: res.source);
-                        }),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        key: _reactButtonKey,
-                        child: InkWell(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              "${widget.publication.numReacts} Reaç${widget.publication.numReacts > 1 ? "ôes" : "ão"}",
-                              textAlign: TextAlign.center,
+                          }, childCount: _repliesState.replies.length),
+                        );
+                      return SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 350,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(32.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.add_comment,
+                                    size: 64.0,
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withAlpha(180),
+                                  ),
+                                  Text(
+                                      "Essa publicação ainda não tem nenhum comentario.\nSeja o primeiro a comentar",
+                                      textAlign: TextAlign.center),
+                                ],
+                              ),
                             ),
                           ),
-                          onLongPress: () async {
-                            var react = await showDialog<ReactEntity>(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (con) {
-                                  RenderBox renderReactButton = _reactButtonKey
-                                      .currentContext
-                                      .findRenderObject();
-                                  return FeedReactSelect(
-                                      offset: renderReactButton
-                                          .localToGlobal(Offset.zero));
-                                });
-                            if (react != null)
-                              widget.bloc.dispatch(
-                                  FeedButtonReactPublicationPressed(
-                                      react: react
-                                        ..publicationId =
-                                            widget.publication.publicationId
-                                        ..createdAt =
-                                            DateTime.now().toIso8601String()));
-                          },
-                          onTap: () {
-                            widget.bloc.dispatch(
-                                FeedButtonReactPublicationPressed(
-                                    react: ReactEntity(
-                                        publicationId:
-                                            widget.publication.publicationId,
-                                        type: ReactType.LIKE,
-                                        createdAt:
-                                            DateTime.now().toIso8601String())));
-                          },
                         ),
-                      ),
-                      Expanded(
-                        child: InkWell(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              "${widget.publication.numReplies} Comentário${widget.publication.numReplies > 1 ? "s" : ""}",
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (c) => ViewPublicationScreen(
-                                      publication: widget.publication,
-                                      reply: true,
-                                      bloc: widget.bloc,
-                                    )));
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: InkWell(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              "${widget.publication.numFollowers} Seguidor${widget.publication.numFollowers > 1 ? "res" : ""}",
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          onTap: () {
-                            widget.bloc.dispatch(
-                                FeedButtonFollowPublicationPressed(
-                                    follow: FollowEntity(
-                                        publicationId:
-                                            widget.publication.publicationId,
-                                        createdAt:
-                                            DateTime.now().toIso8601String())));
-                          },
-                        ),
-                      )
-                    ],
-                  ),
+                      );
+                    },
+                  )
                 ],
               ),
             ),
