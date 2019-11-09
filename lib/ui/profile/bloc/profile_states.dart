@@ -2,9 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:res_publica/model/user_entity.dart';
 
-abstract class ProfileState extends Equatable {
-  ProfileState([List props = const []]) : super(props);
-}
+abstract class ProfileState extends Equatable {}
 
 class ProfileEditingName extends ProfileSigned {
   @override
@@ -14,18 +12,27 @@ class ProfileEditingName extends ProfileSigned {
 class ProfileLoading extends ProfileState {
   final bool loading;
 
-  ProfileLoading(this.loading) : super([loading]);
+  ProfileLoading(this.loading);
+
+  @override
+  List<Object> get props => [loading];
 }
 
 class ProfileNotSigned extends ProfileState {
   @override
   String toString() => "ProfileNotSigned";
+
+  @override
+  List<Object> get props => [];
 }
 
 class ProfileSigned extends ProfileState {
   final UserEntity user;
 
-  ProfileSigned({@required this.user}) : super([user]);
+  ProfileSigned({@required this.user});
+
+  @override
+  List<Object> get props => [user];
 
   @override
   String toString() => "ProfileSigned";
@@ -34,7 +41,10 @@ class ProfileSigned extends ProfileState {
 class ProfileErrors extends ProfileState {
   final List<String> errors;
 
-  ProfileErrors({@required this.errors}) : super([errors]);
+  ProfileErrors({@required this.errors});
+
+  @override
+  List<Object> get props => [errors];
 
   @override
   String toString() {
@@ -42,4 +52,7 @@ class ProfileErrors extends ProfileState {
   }
 }
 
-class ProfileOpenSignInScreen extends ProfileState {}
+class ProfileOpenSignInScreen extends ProfileState {
+  @override
+  List<Object> get props => [];
+}

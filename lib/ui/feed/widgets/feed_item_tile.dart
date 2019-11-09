@@ -40,8 +40,8 @@ class _FeedItemTileState extends State<FeedItemTile> {
   @override
   void initState() {
     if (!widget.hideHeader)
-      widget.bloc.dispatch(FeedLoadUserData(userId: widget.publication.userId));
-    widget.bloc.dispatch(
+      widget.bloc.add(FeedLoadUserData(userId: widget.publication.userId));
+    widget.bloc.add(
         FeedLoadReactForPublicationStatus(publication: widget.publication));
     super.initState();
   }
@@ -132,7 +132,7 @@ class _FeedItemTileState extends State<FeedItemTile> {
                             },
                             tooltip: "Mais Opções",
                             onSelected: (item) {
-                              widget.bloc.dispatch(
+                              widget.bloc.add(
                                   FeedButtonMenuItemPressed(option: item));
                             },
                           ),
@@ -248,7 +248,7 @@ class _FeedItemTileState extends State<FeedItemTile> {
                                             .localToGlobal(Offset.zero));
                                   });
                               if (react != null)
-                                widget.bloc.dispatch(
+                                widget.bloc.add(
                                     FeedButtonReactPublicationPressed(
                                         react: react
                                           ..publicationId =
@@ -260,7 +260,7 @@ class _FeedItemTileState extends State<FeedItemTile> {
                               state.processing
                           ? null
                           : () {
-                              widget.bloc.dispatch(
+                              widget.bloc.add(
                                   FeedButtonReactPublicationPressed(
                                       react: _userReact == null
                                           ? ReactEntity(
@@ -312,7 +312,7 @@ class _FeedItemTileState extends State<FeedItemTile> {
                       : widget.user.userId == widget.publication.userId
                           ? null
                           : () {
-                              widget.bloc.dispatch(
+                              widget.bloc.add(
                                   FeedButtonFollowPublicationPressed(
                                       follow: FollowEntity(
                                           publicationId:
@@ -340,14 +340,14 @@ class _FeedItemTileState extends State<FeedItemTile> {
                 FlatButton(
                     onPressed: () {
                       widget.bloc
-                          .dispatch(FeedButtonSignInPublicationPressed());
+                          .add(FeedButtonSignInPublicationPressed());
                       Navigator.of(context).pop();
                     },
                     child: Text("Registrar")),
                 FlatButton(
                     onPressed: () {
                       widget.bloc
-                          .dispatch(FeedButtonSignUpPublicationPressed());
+                          .add(FeedButtonSignUpPublicationPressed());
                       Navigator.of(context).pop();
                     },
                     child: Text("Entrar"))

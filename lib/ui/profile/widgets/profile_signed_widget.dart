@@ -53,9 +53,9 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
           tooltip: "Editar Perfil",
           mini: true,
           onPressed: state is ProfileEditingName
-              ? () => widget.bloc
-                  .dispatch(ProfileUpdateName(name: _nameController.text))
-              : () => widget.bloc.dispatch(ProfileUpdatingName(editing: true)),
+              ? () =>
+                  widget.bloc.add(ProfileUpdateName(name: _nameController.text))
+              : () => widget.bloc.add(ProfileUpdatingName(editing: true)),
           child: state is ProfileEditingName
               ? Icon(Icons.done, color: Colors.black)
               : Icon(Icons.edit, color: Colors.black),
@@ -82,13 +82,13 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                                 if (file == null) return;
                                 File croppedFile = await ImageCropper.cropImage(
                                   sourcePath: file.path,
-                                  ratioX: 1.0,
-                                  ratioY: 1.0,
+                                  aspectRatio:
+                                      CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
                                   maxWidth: 512,
                                   maxHeight: 512,
                                 );
                                 if (croppedFile == null) return;
-                                widget.bloc.dispatch(
+                                widget.bloc.add(
                                     ProfileUpdatePhoto(path: croppedFile.path));
                               }
                             : null,
@@ -122,8 +122,8 @@ class _ProfileSignedWidgetState extends State<ProfileSignedWidget> {
                       ),
                       style: TextStyle(color: Colors.black, fontSize: 24.0),
                       onSubmitted: (name) {
-                        widget.bloc.dispatch(
-                            ProfileUpdateName(name: _nameController.text));
+                        widget.bloc
+                            .add(ProfileUpdateName(name: _nameController.text));
                       },
                     ),
                     Text(_user?.email ?? "",

@@ -59,13 +59,13 @@ class _CreatePublicationScreenState extends State<CreatePublicationScreen> {
                     icon: Icon(Icons.cancel),
                     tooltip: "Cancelar",
                     onPressed: () {
-                      _bloc.dispatch(PublicationCancelButtonPressed());
+                      _bloc.add(PublicationCancelButtonPressed());
                     }),
                 IconButton(
                     icon: Icon(FontAwesomeIcons.checkCircle),
                     tooltip: "Publicar",
                     onPressed: () {
-                      _bloc.dispatch(
+                      _bloc.add(
                           PublicationPublishButtonPressed(PublicationEntity(
                         subtitle: _body.text,
                         createdAt: DateTime.now(),

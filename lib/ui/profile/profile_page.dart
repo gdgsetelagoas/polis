@@ -20,7 +20,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     bloc = BlocProvider.of<ProfileBloc>(context);
-    bloc.state.listen(_states);
+    bloc.listen(_states);
     super.initState();
   }
 
@@ -75,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: SignInScreen(),
                   )))
           .then((user) {
-        bloc.dispatch(user == null
+        bloc.add(user == null
             ? ProfileUserAuthenticatedFail()
             : ProfileUserAuthenticated(user: user));
       });

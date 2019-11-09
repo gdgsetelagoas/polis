@@ -9,7 +9,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   ProfileBloc(this._accountDataSource) {
     _accountDataSource.onAuthStateChange().listen((user) {
-      dispatch(user == null
+      add(user == null
           ? ProfileUserAuthenticatedFail()
           : ProfileUserAuthenticated(user: user));
     });

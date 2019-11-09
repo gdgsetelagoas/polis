@@ -42,9 +42,9 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
 
   @override
   void initState() {
-    widget.bloc.dispatch(FeedLoadReplies(
+    widget.bloc.add(FeedLoadReplies(
         publication: widget.publication, itemsPerPage: 25, page: 0));
-    widget.bloc.dispatch(FeedLoadUserData(userId: widget.publication.userId));
+    widget.bloc.add(FeedLoadUserData(userId: widget.publication.userId));
     super.initState();
   }
 
@@ -126,7 +126,7 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
             },
             tooltip: "Mais OpçformattedStringões",
             onSelected: (item) {
-              widget.bloc.dispatch(FeedButtonMenuItemPressed(option: item));
+              widget.bloc.add(FeedButtonMenuItemPressed(option: item));
             },
           ),
         ],
@@ -259,7 +259,7 @@ class _ViewPublicationScreenState extends State<ViewPublicationScreen> {
                         ),
                         onPressed: () {
                           if (_replyController.text.isEmpty) return;
-                          widget.bloc.dispatch(
+                          widget.bloc.add(
                               FeedButtonRepliesPublicationPressed(
                                   reply: ReplyEntity(
                                       body: _replyController.text,

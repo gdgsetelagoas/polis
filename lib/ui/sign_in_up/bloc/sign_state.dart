@@ -1,9 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:res_publica/model/user_entity.dart';
 
-abstract class SignState extends Equatable {
-  SignState([List props = const []]) : super(props);
-}
+abstract class SignState extends Equatable {}
 
 class SignLoading extends SignState {
   final bool loading;
@@ -14,6 +12,9 @@ class SignLoading extends SignState {
   String toString() {
     return 'SignLoading{loading: $loading}';
   }
+
+  @override
+  List<Object> get props => [loading];
 }
 
 class SignInitial extends SignState {
@@ -21,6 +22,9 @@ class SignInitial extends SignState {
   String toString() {
     return 'SignInitial{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 class SignLoginSuccessful extends SignState {
@@ -32,6 +36,9 @@ class SignLoginSuccessful extends SignState {
   String toString() {
     return 'SignLoginSuccessful{user: $user}';
   }
+
+  @override
+  List<Object> get props => [user];
 }
 
 class SignLoginFail extends SignState {
@@ -43,6 +50,9 @@ class SignLoginFail extends SignState {
   String toString() {
     return 'SignLoginFail{errors: $errors}';
   }
+
+  @override
+  List<Object> get props => [errors];
 }
 
 class SignRegister extends SignState {
@@ -50,6 +60,9 @@ class SignRegister extends SignState {
   String toString() {
     return 'SignRegister{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 class SignErrors extends SignState {
@@ -61,4 +74,7 @@ class SignErrors extends SignState {
   String toString() {
     return 'SignErrors{errors: $errors}';
   }
+
+  @override
+  List<Object> get props => [errors];
 }

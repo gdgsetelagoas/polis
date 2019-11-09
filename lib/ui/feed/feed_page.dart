@@ -21,7 +21,7 @@ class _FeedPageState extends State<FeedPage> {
   @override
   void initState() {
     _scrollController.addListener(_onScroll);
-    _bloc.dispatch(FeedLoadFeed(widget.feedContext));
+    _bloc.add(FeedLoadFeed(widget.feedContext));
     super.initState();
   }
 
@@ -37,7 +37,7 @@ class _FeedPageState extends State<FeedPage> {
               if (state is FeedList)
                 return RefreshIndicator(
                   onRefresh: () async {
-                    _bloc.dispatch(FeedRefresh(widget.feedContext));
+                    _bloc.add(FeedRefresh(widget.feedContext));
                   },
                   child: ListView.builder(
                       itemCount: state.publications.length,
@@ -82,7 +82,7 @@ class _FeedPageState extends State<FeedPage> {
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
     if (maxScroll - currentScroll <= _scrollThreshold) {
-      _bloc.dispatch(FeedLoadMore(widget.feedContext));
+      _bloc.add(FeedLoadMore(widget.feedContext));
     }
   }
 }

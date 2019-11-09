@@ -208,7 +208,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               color: Theme.of(context).primaryColor,
                               textColor: Colors.white,
                               onPressed: () {
-                                bloc.dispatch(SignRegisterButtonPressed(
+                                bloc.add(SignRegisterButtonPressed(
                                     user: UserEntity(
                                         name: _fullNameController.text,
                                         email: _emailController.text,

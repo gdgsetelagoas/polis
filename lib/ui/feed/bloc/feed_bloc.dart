@@ -24,9 +24,9 @@ class FeedBloc extends Bloc<FeedEvent, FeedState> {
   FeedState get initialState => InitialFeedState();
 
   @override
-  void dispose() {
+  Future close() async {
     _processingPublisher.close();
-    super.dispose();
+    super.close();
   }
 
   @override

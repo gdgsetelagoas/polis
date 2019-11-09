@@ -41,7 +41,7 @@ class _ReplyWidgetState extends State<ReplyWidget> {
 
   @override
   void dispose() {
-    _bloc.dispose();
+    _bloc.close();
     super.dispose();
   }
 
@@ -52,7 +52,7 @@ class _ReplyWidgetState extends State<ReplyWidget> {
         padding: widget.padding,
         margin: widget.margin,
       );
-    _bloc?.dispatch(ReplyLoadUserData(userId: widget.reply?.userId));
+    _bloc?.add(ReplyLoadUserData(userId: widget.reply?.userId));
     return Container(
       padding: widget.padding,
       margin: widget.margin,

@@ -3,9 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:res_publica/model/publication_entity.dart';
 
 @immutable
-abstract class PublicationEvent extends Equatable {
-  PublicationEvent([List props = const []]) : super(props);
-}
+abstract class PublicationEvent extends Equatable {}
 
 class PublicationPublishButtonPressed extends PublicationEvent {
   final PublicationEntity publication;
@@ -16,6 +14,9 @@ class PublicationPublishButtonPressed extends PublicationEvent {
   String toString() {
     return 'PublicationPublishButtonPressed{publication: $publication}';
   }
+
+  @override
+  List<Object> get props => [publication];
 }
 
 class PublicationToDraftEvent extends PublicationEvent {
@@ -27,6 +28,9 @@ class PublicationToDraftEvent extends PublicationEvent {
   String toString() {
     return 'PublicationToDraftEvent{publication: $publication}';
   }
+
+  @override
+  List<Object> get props => [publication];
 }
 
 class PublicationToEditing extends PublicationEvent {
@@ -38,6 +42,9 @@ class PublicationToEditing extends PublicationEvent {
   String toString() {
     return 'PublicationToEditing{publication: $publication}';
   }
+
+  @override
+  List<Object> get props => [publication];
 }
 
 class PublicationCancelButtonPressed extends PublicationEvent {
@@ -45,6 +52,9 @@ class PublicationCancelButtonPressed extends PublicationEvent {
   String toString() {
     return 'PublicationCancelButtonPressed{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 class PublicationNothing extends PublicationEvent {
@@ -52,4 +62,8 @@ class PublicationNothing extends PublicationEvent {
   String toString() {
     return 'PublicationNothing{}';
   }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
 }

@@ -2,9 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:res_publica/model/user_entity.dart';
 
-abstract class SignEvent extends Equatable {
-  SignEvent([List props = const []]) : super(props);
-}
+abstract class SignEvent extends Equatable {}
 
 class SignLoginButtonPressed extends SignEvent {
   final String email;
@@ -16,6 +14,9 @@ class SignLoginButtonPressed extends SignEvent {
   String toString() {
     return 'SignLoginButtonPressed{email: $email, password: $password}';
   }
+
+  @override
+  List<Object> get props => [email, password];
 }
 
 class SignLoginWithGooglePressed extends SignEvent {
@@ -23,6 +24,9 @@ class SignLoginWithGooglePressed extends SignEvent {
   String toString() {
     return 'SignLoginWithGooglePressed{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 class SignRegisterButtonPressed extends SignEvent {
@@ -34,4 +38,7 @@ class SignRegisterButtonPressed extends SignEvent {
   String toString() {
     return 'SignRegisterButtonPressed{user: $user}';
   }
+
+  @override
+  List<Object> get props => [user];
 }

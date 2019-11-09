@@ -16,7 +16,7 @@ class PublicationBloc extends Bloc<PublicationEvent, PublicationState> {
     @required this.accountDataSource,
     @required this.publicationDataSource,
   }) {
-    dispatch(PublicationNothing());
+    add(PublicationNothing());
   }
 
   @override

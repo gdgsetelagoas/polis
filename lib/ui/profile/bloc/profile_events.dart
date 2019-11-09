@@ -2,14 +2,15 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:res_publica/model/user_entity.dart';
 
-abstract class ProfileEvent extends Equatable {
-  ProfileEvent([List props = const []]) : super(props);
-}
+abstract class ProfileEvent extends Equatable {}
 
 class ProfileUpdateName extends ProfileEvent {
   final String name;
 
-  ProfileUpdateName({@required this.name}) : super([name]);
+  ProfileUpdateName({@required this.name});
+
+  @override
+  List<Object> get props => [name];
 
   @override
   String toString() {
@@ -20,7 +21,10 @@ class ProfileUpdateName extends ProfileEvent {
 class ProfileUpdatingName extends ProfileEvent {
   final bool editing;
 
-  ProfileUpdatingName({@required this.editing}) : super([editing]);
+  ProfileUpdatingName({@required this.editing});
+
+  @override
+  List<Object> get props => [editing];
 
   @override
   String toString() {
@@ -31,7 +35,10 @@ class ProfileUpdatingName extends ProfileEvent {
 class ProfileUpdatePhoto extends ProfileEvent {
   final String path;
 
-  ProfileUpdatePhoto({@required this.path}) : super([path]);
+  ProfileUpdatePhoto({@required this.path});
+
+  @override
+  List<Object> get props => [path];
 
   @override
   String toString() {
@@ -46,12 +53,18 @@ class ProfileUserAuthenticatedFail extends ProfileEvent {
   String toString() {
     return 'ProfileUserAuthenticatedFail';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 class ProfileUserAuthenticated extends ProfileEvent {
   final UserEntity user;
 
-  ProfileUserAuthenticated({@required this.user}) : super([user]);
+  ProfileUserAuthenticated({@required this.user});
+
+  @override
+  List<Object> get props => [user];
 
   @override
   String toString() {
@@ -66,4 +79,7 @@ class ProfileUserAuthenticating extends ProfileEvent {
   String toString() {
     return 'ProfileUpdateName';
   }
+
+  @override
+  List<Object> get props => [];
 }

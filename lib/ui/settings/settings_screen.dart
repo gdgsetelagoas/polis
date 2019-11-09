@@ -35,7 +35,7 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: FlatButton(
                   onPressed: () {
-                    bloc.dispatch(SettingsSignOut());
+                    bloc.add(SettingsSignOut());
                   },
                   child: Row(
                     children: <Widget>[

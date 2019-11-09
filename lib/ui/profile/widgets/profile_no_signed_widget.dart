@@ -33,7 +33,7 @@ class ProfileNoSignedWidget extends StatelessWidget {
             ),
             OutlineButton(
               onPressed: () {
-                bloc.dispatch(ProfileUserAuthenticating());
+                bloc.add(ProfileUserAuthenticating());
               },
               child: Text("Login"),
               color: Theme.of(context).primaryColor,

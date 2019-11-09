@@ -4,15 +4,16 @@ import 'package:res_publica/model/publication_entity.dart';
 import 'package:res_publica/model/user_entity.dart';
 
 @immutable
-abstract class PublicationState extends Equatable {
-  PublicationState([List props = const []]) : super(props);
-}
+abstract class PublicationState extends Equatable {}
 
 class InitialPostState extends PublicationState {
   @override
   String toString() {
     return 'InitialPostState{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 class PublicationErrors extends PublicationState {
@@ -24,6 +25,9 @@ class PublicationErrors extends PublicationState {
   String toString() {
     return 'PublicationErrors{errors: $errors}';
   }
+
+  @override
+  List<Object> get props => [errors];
 }
 
 class PublicationCreate extends PublicationState {
@@ -35,6 +39,9 @@ class PublicationCreate extends PublicationState {
   String toString() {
     return 'PublicationCreate{user: $user}';
   }
+
+  @override
+  List<Object> get props => [user];
 }
 
 class PublicationEdit extends PublicationCreate {
@@ -57,6 +64,9 @@ class PublicationSuccessful extends PublicationState {
   String toString() {
     return 'PublicationSuccessful{publication: $publication}';
   }
+
+  @override
+  List<Object> get props => [publication];
 }
 
 class PublicationProcessing extends PublicationState {
@@ -68,6 +78,9 @@ class PublicationProcessing extends PublicationState {
   String toString() {
     return 'PublicationProcessing{isProcessing: $isProcessing}';
   }
+
+  @override
+  List<Object> get props => [isProcessing];
 }
 
 class PublicationCancel extends PublicationState {
@@ -79,6 +92,9 @@ class PublicationCancel extends PublicationState {
   String toString() {
     return 'PublicationCancel{isCancel: $isCancel}';
   }
+
+  @override
+  List<Object> get props => [isCancel];
 }
 
 class PublicationEmpty extends PublicationState {
@@ -86,4 +102,7 @@ class PublicationEmpty extends PublicationState {
   String toString() {
     return 'PublicationEmpty{}';
   }
+
+  @override
+  List<Object> get props => [];
 }

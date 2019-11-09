@@ -148,14 +148,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     children: <Widget>[
                       FlatButton(
                           onPressed: () {
-                            bloc.dispatch(SignRegisterButtonPressed());
+                            bloc.add(SignRegisterButtonPressed());
                           },
                           child: Text("Cadastrar",
                               style: TextStyle(
                                   color: Theme.of(context).primaryColor))),
                       OutlineButton(
                         onPressed: () {
-                          bloc.dispatch(SignLoginWithGooglePressed());
+                          bloc.add(SignLoginWithGooglePressed());
                         },
                         child: Icon(
                           FontAwesomeIcons.google,
@@ -168,7 +168,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         padding: const EdgeInsets.only(left: 16.0),
                         child: OutlineButton(
                           onPressed: () {
-                            bloc.dispatch(SignLoginButtonPressed(
+                            bloc.add(SignLoginButtonPressed(
                                 email: _emailController.text,
                                 password: _passwordController.text));
                           },

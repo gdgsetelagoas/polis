@@ -6,9 +6,7 @@ import 'package:res_publica/model/react_entity.dart';
 import 'package:res_publica/model/reply_entity.dart';
 
 @immutable
-abstract class FeedEvent extends Equatable {
-  FeedEvent([List props = const []]) : super(props);
-}
+abstract class FeedEvent extends Equatable {}
 
 enum FeedContext { GENERAL, MINE, FOLLOWED }
 
@@ -21,6 +19,9 @@ class FeedLoadFeed extends FeedEvent {
   String toString() {
     return 'FeedLoadFeed{feedContext: $feedContext}';
   }
+
+  @override
+  List<Object> get props => [feedContext];
 }
 
 class FeedLoadMore extends FeedEvent {
@@ -32,6 +33,9 @@ class FeedLoadMore extends FeedEvent {
   String toString() {
     return 'FeedLoadMore{feedContext: $feedContext}';
   }
+
+  @override
+  List<Object> get props => [feedContext];
 }
 
 class FeedRefresh extends FeedEvent {
@@ -43,6 +47,9 @@ class FeedRefresh extends FeedEvent {
   String toString() {
     return 'FeedRefresh{feedContext: $feedContext}';
   }
+
+  @override
+  List<Object> get props => [feedContext];
 }
 
 class FeedButtonReactPublicationPressed extends FeedEvent {
@@ -55,6 +62,9 @@ class FeedButtonReactPublicationPressed extends FeedEvent {
   String toString() {
     return 'FeedButtonReactPublicationPressed{react: $react}';
   }
+
+  @override
+  List<Object> get props => [react];
 }
 
 class FeedButtonRepliesPublicationPressed extends FeedEvent {
@@ -66,6 +76,9 @@ class FeedButtonRepliesPublicationPressed extends FeedEvent {
   String toString() {
     return 'FeedButtonRepliesPublicationPressed{reply: $reply}';
   }
+
+  @override
+  List<Object> get props => [reply];
 }
 
 class FeedButtonFollowPublicationPressed extends FeedEvent {
@@ -77,6 +90,9 @@ class FeedButtonFollowPublicationPressed extends FeedEvent {
   String toString() {
     return 'FeedButtonFollowPublicationPressed{entity: $follow}';
   }
+
+  @override
+  List<Object> get props => [follow];
 }
 
 class FeedButtonSignUpPublicationPressed extends FeedEvent {
@@ -86,6 +102,9 @@ class FeedButtonSignUpPublicationPressed extends FeedEvent {
   String toString() {
     return 'FeedButtonSignUpPublicationPressed{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 class FeedButtonSignInPublicationPressed extends FeedEvent {
@@ -95,6 +114,9 @@ class FeedButtonSignInPublicationPressed extends FeedEvent {
   String toString() {
     return 'FeedButtonSignInPublicationPressed{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 class FeedButtonMenuItemPressed extends FeedEvent {
@@ -106,18 +128,27 @@ class FeedButtonMenuItemPressed extends FeedEvent {
   String toString() {
     return 'FeedButtonMenuItemPressed{option: $option}';
   }
+
+  @override
+  List<Object> get props => [option];
 }
 
 class FeedLoadUserData extends FeedEvent {
   final String userId;
 
-  FeedLoadUserData({this.userId}) : super([userId]);
+  FeedLoadUserData({this.userId});
+
+  @override
+  List<Object> get props => [userId];
 }
 
 class FeedLoadReactForPublicationStatus extends FeedEvent {
   final PublicationEntity publication;
 
-  FeedLoadReactForPublicationStatus({this.publication}) : super([publication]);
+  FeedLoadReactForPublicationStatus({this.publication});
+
+  @override
+  List<Object> get props => [publication];
 }
 
 class FeedLoadReplies extends FeedEvent {
@@ -130,5 +161,8 @@ class FeedLoadReplies extends FeedEvent {
     this.reply,
     this.itemsPerPage = 25,
     this.page = 0,
-  }) : super([reply, publication, itemsPerPage, page]);
+  });
+
+  @override
+  List<Object> get props => [reply, publication, itemsPerPage, page];
 }
